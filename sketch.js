@@ -9,6 +9,9 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   fft = new p5.FFT();
+   reverb = new p5.Reverb();
+  sound.disconnect();              // メイン出力から切り離す
+  reverb.process(sound, 3, 2);
   
   // ボタンクリックイベントの設定
   button = select('#toggle-btn');
