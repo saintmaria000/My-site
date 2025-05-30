@@ -1,4 +1,4 @@
-let sound;
+/*let sound;
 let fft;
 let button;
 
@@ -52,4 +52,61 @@ function togglePlay() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+}
+*/
+let particles = [];
+let sound, amp;
+
+function preload() {
+  sound = loadSound('music/track1.mp3');
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  amp = new p5.Amplitude();
+  sound.play();
+}
+
+function draw() {
+  background(0, 50);
+
+  let level = amp.getLevel();
+  let numNew = int(map(level, 0, 0.3, 0, 5)); // 音が大きいと粒子が増える
+
+  for (let i = 0; i < numNew; i++) {
+    particles.push(new Particle());
+  }
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    particles[i].display();
+
+    if (particles[i].isDead()) {
+      particles.splice(i, 1);
+    }
+  }
+}
+
+// パーティクルクラス
+class Particle {
+  constructor() {
+    this.pos = createVector(width / 2, height / 2);
+    this.vel = p5.Vector.random2D().mult(random(1, 4));
+    this.life = 255;
+  }
+
+  update() {
+    this.pos.add(this.vel);
+    this.life -= 2;
+  }
+
+  display() {
+    noStroke();
+    fill(255, this.life);
+    ellipse(this.pos.x, this.pos.y, 5);
+  }
+
+  isDead() {
+    return this.life <= 0;
+  }
 }
