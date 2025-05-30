@@ -32,4 +32,14 @@ function draw() {
     }
     endShape();
   }
+function togglePlay() {
+  if (sound.isPlaying()) {
+    sound.pause();
+  } else {
+    sound.play();
+  }
+}
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
