@@ -58,7 +58,7 @@ let particles = [];
 let sound, amp;
 
 function preload() {
-  sound = loadSound('music/track1.mp3');
+  sound = loadSound('music/Synonmy.mp3');
 }
 
 function setup() {
