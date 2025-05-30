@@ -58,7 +58,6 @@ let sound;
 let fft;
 let button;
 let particles = [];
-let sound, amp;
 
 function preload() {
   sound = loadSound('music/Synonmy.mp3');
