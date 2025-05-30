@@ -54,6 +54,9 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 */
+let sound;
+let fft;
+let button;
 let particles = [];
 let sound, amp;
 
