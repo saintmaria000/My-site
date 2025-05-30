@@ -3,7 +3,7 @@ let fft;
 let button;
 
 function preload() {
-  sound = loadSound('music/4.mp3');  // 音源ファイルのパス
+  sound = loadSound('Synonmy.mp3');  // 音源ファイルのパス
 }
 
 function setup() {
