@@ -20,7 +20,7 @@ function setup() {
 }
 
 function draw() {
-    background(0, 80); // 残像効果（トレイル演出）
+    background(0, 20); // 残像効果（トレイル演出）
   
     let waveform = fft.waveform();
   
