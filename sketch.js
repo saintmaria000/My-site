@@ -33,11 +33,18 @@ function draw() {
     endShape();
   }
 function togglePlay() {
-  if (sound.isPlaying()) {
-    sound.pause();
+   if (sound.isPlaying()) {
+    // フェードアウト → 完全停止
+    sound.setVolume(0, 1); // 1秒かけて音量0へ
+    setTimeout(() => {
+      sound.stop();
+      sound.setVolume(1); // 次回再生のために戻す
+    }, 1000);
   } else {
+    sound.setVolume(0); // 再生直後は音量0
     sound.play();
-  }
+    sound.setVolume(1, 1); // 1秒かけて音量1に（フェードイン）
+   }
 }
 
 function windowResized() {
