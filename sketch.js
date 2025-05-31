@@ -1,4 +1,4 @@
-/*let sound;
+let sound;
 let fft;
 let button;
 
@@ -53,8 +53,8 @@ function togglePlay() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-*/
-let sound;
+
+/*let sound;
 let fft;
 let button;
 let particles = [];
@@ -111,4 +111,4 @@ class Particle {
   isDead() {
     return this.life <= 0;
   }
-}
+}*/
