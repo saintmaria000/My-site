@@ -1,7 +1,12 @@
 let sound;
 let fft;
 let button;
-volumeSlider = select("#volume-slider");
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  fft = new p5.FFT();
+
+  volumeSlider = select("#volume-slider");
 
   // ファイル選択で音楽ロード
   document.getElementById("file-input").addEventListener("change", (e) => {
@@ -15,10 +20,7 @@ volumeSlider = select("#volume-slider");
       });
     }
   });
-
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  fft = new p5.FFT();
+  
    reverb = new p5.Reverb();
   sound.disconnect();              // メイン出力から切り離す
   reverb.process(sound, 3, 2);
