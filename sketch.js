@@ -1,10 +1,20 @@
 let sound;
 let fft;
 let button;
+volumeSlider = select("#volume-slider");
 
-function preload() {
-  sound = loadSound('music/Synonmy.mp3');  // 音源ファイルのパス
-}
+  // ファイル選択で音楽ロード
+  document.getElementById("file-input").addEventListener("change", (e) => {
+    if (soundFile) {
+      soundFile.stop();
+    }
+    const file = e.target.files[0];
+    if (file) {
+      soundFile = loadSound(URL.createObjectURL(file), () => {
+        console.log("Sound loaded");
+      });
+    }
+  });
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
