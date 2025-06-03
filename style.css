@@ -22,14 +22,13 @@ canvas {
   z-index: 10;
   width: 100%;
   height: 100%;
-  /* 背景なしにしてcanvasが透けて見える */
   background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  pointer-events: none; /* 背景クリックを許可（必要に応じて） */
+  pointer-events: none;
 }
 
 /* === ロゴ画像 === */
@@ -44,10 +43,10 @@ canvas {
   bottom: 20px;
   left: 20px;
   z-index: 5;
-  background: rgba(255, 255, 255, 0.1); /* 薄い白の半透明 */
+  background: rgba(255, 255, 255, 0.1);
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4); /* 影で浮かせる */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   backdrop-filter: blur(4px);
 }
 
@@ -93,46 +92,58 @@ canvas {
   align-items: center;
 }
 
-/* === ハンバーガーメニュー === */
+/* === ハンバーガーメニュー全体 === */
 #hamburger-nav {
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 10;
+  z-index: 30;
 }
 
+/* ✅ チェックボックス（非表示） */
+#menu-toggle {
+  display: none;
+}
+
+/* === メニューアイコン（☰） === */
 .menu-icon {
   font-size: 32px;
   cursor: pointer;
   display: block;
   color: white;
   padding: 8px;
-  background: rgba(51, 51, 51, 0.6); /* 半透明の背景 */
+  background: rgba(51, 51, 51, 0.6);
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* 浮き感 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(2px);
 }
 
+/* === メニュー内容 === */
 .menu-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  position: fixed; /* absolute から fixed に変更 */
+  display: none; /* 初期は非表示 */
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-
-  background: rgba(0, 0, 0, 0.4); /* 半透明で浮いて見える */
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   color: white;
   z-index: 20;
   text-align: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+
+/* ✅ チェックされたときに表示 */
 #menu-toggle:checked + .menu-icon + .menu-content {
-  display: block;
+  display: flex;
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* === レスポンシブ対応 === */
