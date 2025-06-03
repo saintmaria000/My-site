@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -11,12 +11,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
 </head>
 <body>
-  <div id="cover">
-    <h1>🎵 Audio Visualizer</h1>
-    <img src="logo.png" alt="Logo" id="logo" />
-    
-    <input type="file" id="file-input" accept="audio/*" />
-  </div>
+  <!-- ハンバーガーメニュー -->
+  <nav id="hamburger-nav">
+    <input type="checkbox" id="menu-toggle" />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+    <div class="menu-content">
+      <h1>🎵 Audio Visualizer</h1>
+      <img src="logo.png" alt="Logo" id="logo" />
+      <input type="file" id="file-input" accept="audio/*" />
+    </div>
+  </nav>
 
   <div id="ui">
     <button id="toggle-btn">▶ Play / Pause</button>
