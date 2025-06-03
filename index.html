@@ -12,15 +12,17 @@
 </head>
 <body>
   <!-- ハンバーガーメニュー -->
+
   <nav id="hamburger-nav">
-    <input type="checkbox" id="menu-toggle" />
-    <label for="menu-toggle" class="menu-icon">&#9776;</label>
-    <div class="menu-content">
-      <h1>🎵 Audio Visualizer</h1>
-      <img src="logo.png" alt="Logo" id="logo" />
-      <input type="file" id="file-input" accept="audio/*" />
-    </div>
-  </nav>
+  <input type="checkbox" id="menu-toggle" hidden />
+  <label for="menu-toggle" class="menu-icon">&#9776;</label>
+
+  <div class="menu-content">
+    <h1>🎵 Audio Visualizer</h1>
+    <img src="logo.png" alt="Logo" id="logo" />
+    <input type="file" id="file-input" accept="audio/*" />
+  </div>
+</nav>
 
   <div id="ui">
     <button id="toggle-btn">▶ Play / Pause</button>
