@@ -35,8 +35,8 @@ function setup() {
 function draw() {
   background(0, 20); // 残像効果
 
-  if (sound && sound.isLoaded() && sound.isPlaying()) {
-    let waveform = fft.waveform();
+  if (sound && sound.isLoaded()) {
+    let waveform = fft.waveform(); // fft.getEnergy() などでも可
 
     beginShape();
     for (let i = 0; i < waveform.length; i++) {
@@ -60,6 +60,7 @@ function togglePlay() {
   } else {
     sound.setVolume(0);
     sound.play();
+    fft.setInput(sound); // 念のためここでも設定しておく
     sound.setVolume(1, 1);
   }
 }
