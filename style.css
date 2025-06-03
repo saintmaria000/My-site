@@ -1,4 +1,4 @@
-* 背景canvasを固定配置 */
+/* === ベーススタイル === */
 body, html {
   margin: 0;
   padding: 0;
@@ -8,12 +8,15 @@ body, html {
   height: 100%;
   overflow: hidden;
 }
+
 canvas {
   position: fixed;
   top: 0;
   left: 0;
   z-index: -1;
 }
+
+/* === カバー（幕）UI === */
 #cover {
   position: absolute;
   z-index: 10;
@@ -27,17 +30,111 @@ canvas {
   text-align: center;
 }
 
+/* === ロゴ画像 === */
 #logo {
   width: 150px;
   margin: 20px;
 }
 
+/* === 再生・UIボックス === */
 #ui {
   position: absolute;
-  top: 20px;
+  bottom: 20px;
   left: 20px;
-  z-index: 10;
+  z-index: 5;
   background: rgba(255, 255, 255, 0.7);
   padding: 10px;
   border-radius: 8px;
+}
+
+/* === 音量スライダー === */
+#volume-slider {
+  width: 200px;
+  margin: 10px;
+}
+
+/* === ファイル選択 === */
+#file-input {
+  margin: 10px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #111;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* === 再生ボタン === */
+#toggle-btn {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #00cc99;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#toggle-btn:hover {
+  background-color: #00aa7a;
+}
+
+/* === UIコントロール用ラッパー === */
+#controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === ハンバーガーメニュー === */
+#hamburger-nav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.menu-icon {
+  font-size: 32px;
+  cursor: pointer;
+  display: block;
+  color: white;
+  padding: 8px;
+  background: #333;
+  border-radius: 4px;
+}
+
+.menu-content {
+  display: none;
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 16px;
+  border-radius: 8px;
+  color: white;
+  min-width: 200px;
+}
+
+#menu-toggle:checked + .menu-icon + .menu-content {
+  display: block;
+}
+
+/* === レスポンシブ対応 === */
+@media screen and (max-width: 600px) {
+  #volume-slider {
+    width: 150px;
+  }
+
+  #logo {
+    width: 100px;
+  }
+
+  #toggle-btn {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
 }
