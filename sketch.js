@@ -7,10 +7,8 @@ let volumeSlider;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   fft = new p5.FFT();
-
   volumeSlider = select("#volume-slider");
 
-  // 音声ファイル選択イベント
   document.getElementById("file-input").addEventListener("change", (e) => {
     if (sound) {
       sound.stop();
@@ -21,17 +19,15 @@ function setup() {
       sound = loadSound(URL.createObjectURL(file), () => {
         console.log("Sound loaded");
 
-        // エフェクト適用はロード後に行う
+        // 音がロードされた後にのみエフェクト処理
         reverb = new p5.Reverb();
-        sound.disconnect();              // メイン出力から切り離す
+        sound.disconnect();             // 必ずsoundが有効になってから
         reverb.process(sound, 3, 2);
-
-        fft.setInput(sound); // FFTで音の波形を取得
+        fft.setInput(sound);
       });
     }
   });
 
-  // 再生ボタン
   button = select('#toggle-btn');
   button.mousePressed(togglePlay);
 
