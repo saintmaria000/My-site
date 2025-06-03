@@ -1,12 +1,12 @@
 let sound;
 let fft;
 let button;
-let reverb;
 let volumeSlider;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   fft = new p5.FFT();
+
   volumeSlider = select("#volume-slider");
 
   document.getElementById("file-input").addEventListener("change", (e) => {
@@ -19,11 +19,7 @@ function setup() {
       sound = loadSound(URL.createObjectURL(file), () => {
         console.log("Sound loaded");
 
-        // 音がロードされた後にのみエフェクト処理
-        reverb = new p5.Reverb();
-        sound.disconnect();             // 必ずsoundが有効になってから
-        reverb.process(sound, 3, 2);
-        fft.setInput(sound);
+        fft.setInput(sound); // FFTに入力をセット（リバーブ削除）
       });
     }
   });
@@ -39,7 +35,7 @@ function setup() {
 function draw() {
   background(0, 20); // 残像効果
 
-  if (sound && sound.isLoaded()) {
+  if (sound && sound.isLoaded() && sound.isPlaying()) {
     let waveform = fft.waveform();
 
     beginShape();
@@ -59,12 +55,12 @@ function togglePlay() {
     sound.setVolume(0, 1);
     setTimeout(() => {
       sound.stop();
-      sound.setVolume(1); // 次の再生に備えて戻す
+      sound.setVolume(1);
     }, 1000);
   } else {
     sound.setVolume(0);
     sound.play();
-    sound.setVolume(1, 1); // フェードイン
+    sound.setVolume(1, 1);
   }
 }
 
