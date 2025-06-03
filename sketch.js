@@ -5,7 +5,7 @@ let volumeSlider;
 
 function preload() {
   // 最初にデフォルトの音を読み込む
-  sound = loadSound('sound/magiceffect.mp3');
+  sound = loadSound('music/magiceffect.mp3');
 }
 
 function setup() {
