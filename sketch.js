@@ -10,12 +10,12 @@ function setup() {
 
   // ファイル選択で音楽ロード
   document.getElementById("file-input").addEventListener("change", (e) => {
-    if (soundFile) {
-      soundFile.stop();
+    if (sound) {
+      sound.stop();
     }
     const file = e.target.files[0];
     if (file) {
-      soundFile = loadSound(URL.createObjectURL(file), () => {
+      sound = loadSound(URL.createObjectURL(file), () => {
         console.log("Sound loaded");
       });
     }
