@@ -46,22 +46,40 @@ function draw() {
   }
   // 🔥 ここで解析処理を実行（これがないと getEnergy() が効かない！）
   let spectrum = fft.analyze();
-  
+
   /// 背景に虹色のグラデーション
   // === 中央線から上下に虹色グラデーションが広がる背景 ===
-  let baseY = height / 2;         // 中央線の位置（波形中心）
-  let layerCount = 100;           // 何本のラインを描くか
-  let hueBase = (frameCount * 0.5) % 360;
+  let baseY = height / 2;
+  let spreadSpeed = 2;
+  let layerCount = 300; // 高密度に
+  let maxSpread = height / 2;
+  let cycleLength = maxSpread;  // 色が切り替わる周期
+
+  // 色の進行具合（波の拡がり距離）
+  let spread = frameCount * spreadSpeed % (maxSpread + cycleLength);
+
+  // 古い色（先に出てまだ残っている色）
+  let hueOld = (frameCount * 0.5) % 360;
+
+  // 新しい色（次に出てくる色）
+  let hueNew = (hueOld + 60) % 360;
 
   for (let i = 0; i < layerCount; i++) {
-    let offset = i * 2;  // 各ラインの上下オフセット（2px間隔）
-    let hue = (hueBase + i * 2) % 360;  // 色相を少しずつずらす
-    let alpha = map(i, 0, layerCount, 30, 0); // 外側へ行くほど薄く
+    let offset = i * (maxSpread / layerCount);  // 線のY距離
+    let progress = offset / spread;  // 進行割合（0〜1）
 
-    fill(hue, 80, 60, alpha); // HSB色＋透明度
+    // まだ到達していない層は描かない（拡がる表現）
+    if (progress > 1) continue;
+
+    // 色相をグラデーションで変える（新旧色の混合）
+    let hue = lerp(hueNew, hueOld, progress);
+    let alpha = map(progress, 0, 1, 30, 0);
+
+    fill(hue, 80, 60, alpha);
     noStroke();
-    rect(0, baseY - offset, width, 2); // 上方向
-    rect(0, baseY + offset, width, 2); // 下方向
+
+    rect(0, baseY - offset, width, 1); // 上へ
+    rect(0, baseY + offset, width, 1); // 下へ
   }
   /// 再生中の音がロードされていればビジュアライズ実行
   if (sound && sound.isLoaded()) {
@@ -89,9 +107,9 @@ function draw() {
 
     /// 左下にバーで帯域を可視化
     noStroke();
-    fill(0, 255, 128);   rect(50, height - bass, 30, bass);  // bass
-    fill(255, 180, 0);   rect(100, height - mid, 30, mid);   // mid
-    fill(255, 50, 100);  rect(150, height - hi, 30, hi);     // hi
+    fill(0, 255, 128); rect(50, height - bass, 30, bass);  // bass
+    fill(255, 180, 0); rect(100, height - mid, 30, mid);   // mid
+    fill(255, 50, 100); rect(150, height - hi, 30, hi);     // hi
 
     /// デバッグ情報を更新
     infoDiv.html(`
@@ -134,3 +152,4 @@ function togglePlay() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
