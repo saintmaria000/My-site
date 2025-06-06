@@ -40,6 +40,11 @@ function setup() {
 
 /// --- メイン描画処理 ---
 function draw() {
+  console.log("draw loop running");
+  if (sound && sound.isPlaying() && fft.input !== sound) {
+    fft.setInput(sound);
+  }
+    
   /// 背景に虹色のグラデーション
   let energy = fft.getEnergy("bass");
   let hue = (frameCount * 0.5 + energy) % 360;
