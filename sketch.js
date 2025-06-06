@@ -6,7 +6,7 @@ let infoDiv;     // 音声情報表示用div
 
 /// --- 音声ファイルのプリロード（初期音源を読み込む） ---
 function preload() {
-  sound = loadSound('music/Synonmy.mp3');
+  sound = loadSound('music/magiceffect.mp3');
 }
 
 /// --- セットアップ処理（初期化） ---
