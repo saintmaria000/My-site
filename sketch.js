@@ -57,7 +57,7 @@ function draw() {
     
     beginShape();
     for (let i = 0; i < waveform.length; i++) {
-      let x = map(i, 0, waveform.length, width * 0.1, width * 0.9);
+      let x = map(i, 0, waveform.length, 0, width);
       let y = map(waveform[i], -1, 1, height * 0.25, height * 0.75);
       curveVertex(x, y);
     }
