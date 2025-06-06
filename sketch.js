@@ -105,7 +105,7 @@ function draw() {
     /// 帯域エネルギーの取得
     let bass = fft.getEnergy(20, 150);
     let mid = fft.getEnergy(150, 4000);
-    let hi = fft.getEnergy("4000, 12000");
+    let hi = fft.getEnergy(4000, 12000);
 
     /// 左下にバーで帯域を可視化
     noStroke();
