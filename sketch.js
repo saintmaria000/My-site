@@ -44,6 +44,7 @@ function draw() {
   if (sound && sound.isPlaying() && fft.input !== sound) {
     fft.setInput(sound);
   }
+  
   // 🔥 ここで解析処理を実行（これがないと getEnergy() が効かない！）
   let spectrum = fft.analyze();
 
@@ -81,6 +82,7 @@ function draw() {
     rect(0, baseY - offset, width, 1); // 上へ
     rect(0, baseY + offset, width, 1); // 下へ
   }
+  
   /// 再生中の音がロードされていればビジュアライズ実行
   if (sound && sound.isLoaded()) {
     // 安定のため再接続チェック
