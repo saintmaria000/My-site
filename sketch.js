@@ -49,19 +49,20 @@ function draw() {
   
   /// 背景に虹色のグラデーション
   // === 中央線から上下に虹色グラデーションが広がる背景 ===
-  let baseY = height / 2; // 中央線（波形の中心）
-  let maxSpread = height / 2; // 上下にどれだけ広がるか
+  let baseY = height / 2;         // 中央線の位置（波形中心）
+  let layerCount = 100;           // 何本のラインを描くか
   let hueBase = (frameCount * 0.5) % 360;
 
-  for (let offset = 0; offset < maxSpread; offset += 2) {
-    let alpha = map(offset, 0, maxSpread, 20, 0); // 遠くなるほど透明に
-    let hue = (hueBase + offset) % 360;
-    fill(hue, 80, 60, alpha);
+  for (let i = 0; i < layerCount; i++) {
+    let offset = i * 2;  // 各ラインの上下オフセット（2px間隔）
+    let hue = (hueBase + i * 2) % 360;  // 色相を少しずつずらす
+    let alpha = map(i, 0, layerCount, 30, 0); // 外側へ行くほど薄く
+
+    fill(hue, 80, 60, alpha); // HSB色＋透明度
     noStroke();
     rect(0, baseY - offset, width, 2); // 上方向
     rect(0, baseY + offset, width, 2); // 下方向
   }
-
   /// 再生中の音がロードされていればビジュアライズ実行
   if (sound && sound.isLoaded()) {
     // 安定のため再接続チェック
