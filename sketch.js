@@ -53,12 +53,15 @@ function draw() {
     let waveform = fft.waveform();
     stroke(255);
     noFill();
+    let displayWidth = width * 0.6;  
+    
     beginShape();
     for (let i = 0; i < waveform.length; i++) {
-      let x = map(i, 0, waveform.length, 0, width);
-      let y = map(waveform[i], -1, 1, 0, height);
-      vertex(x, y);
+      let x = map(i, 0, waveform.length, width * 0.1, width * 0.9);
+      let y = map(waveform[i], -1, 1, height * 0.25, height * 0.75);
+      curveVertex(x, y);
     }
+    
     endShape();
 
     let bass = fft.getEnergy(20, 150);
