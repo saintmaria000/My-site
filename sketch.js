@@ -84,19 +84,32 @@ function draw() {
 // --- 虹グラデーション背景 ---
 function drawGradientBackground() {
   let baseY = height / 2;
-  let speed = 2, layers = 300, max = height / 2, cycle = max;
+  let speed = 0.5;                 // ゆっくり広がる
+  let layers = 300;
+  let max = height / 2;
+  let cycle = max * 1.5;           // 拡がる距離＋遷移領域
   let spread = frameCount * speed % (max + cycle);
-  let hueOld = (frameCount * 0.5) % 360;
-  let hueNew = (hueOld + 60) % 360;
+
+  // 色のループ（赤→黄→緑→青→紫→赤）
+  let hueNew = (frameCount * 0.2) % 360;
+  let hueOld = (hueNew + 30) % 360; // 次の色と混ぜる差分（柔らかめ）
 
   for (let i = 0; i < layers; i++) {
     let offset = i * (max / layers);
-    let t = offset / spread;
-    if (t > 1) continue;
-    let hue = lerp(hueNew, hueOld, t);
-    let alpha = map(t, 0, 1, 30, 0);
-    fill(hue, 80, 60, alpha);
+    let progress = offset / spread;
+
+    if (progress > 1) continue;
+
+    // 色の境界付近のみグラデーション、それ以外は単色に近く
+    let gradStart = 0.85;
+    let hue = (progress > gradStart)
+      ? lerp(hueOld, hueNew, map(progress, gradStart, 1, 1, 0))
+      : hueNew;
+
+    let alpha = map(progress, 0, 1, 30, 0);
+    fill(hue, 50, 60, alpha); // 彩度低めで優しく
     noStroke();
+
     rect(0, baseY - offset, width, 1);
     rect(0, baseY + offset, width, 1);
   }
