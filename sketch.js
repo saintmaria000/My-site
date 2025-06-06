@@ -1,25 +1,25 @@
-let sound;       // 音声ファイル
-let fft;         // FFT解析
-let button;      // 再生/停止ボタン
-let infoDiv;     // 波形・帯域情報表示用の要素
+/// --- グローバル変数 ---
+let sound;       // 音源
+let fft;         // FFT解析用
+let button;      // 再生ボタン
+let infoDiv;     // 音声情報表示用div
 
+/// --- 音声ファイルのプリロード（初期音源を読み込む） ---
 function preload() {
-  sound = loadSound('music/Synonmy.mp3'); // 初期音源を読み込み
+  sound = loadSound('music/Synonmy.mp3');
 }
 
+/// --- セットアップ処理（初期化） ---
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  
-  // HSBモードで色を扱うことで、虹色のグラデーションが作りやすくなる
-  colorMode(HSB, 360, 100, 100, 100);  
+  colorMode(HSB, 360, 100, 100, 100);  // 背景を虹色グラデ用にHSBに設定
 
   fft = new p5.FFT();
-  fft.setInput(sound);
 
   button = select('#toggle-btn');
   button.mousePressed(togglePlay);
 
-  // 波形・帯域情報の可視化用要素を作成
+  // 音のデバッグ情報表示UI
   infoDiv = createDiv('');
   infoDiv.style('position', 'fixed');
   infoDiv.style('top', '50%');
@@ -38,21 +38,24 @@ function setup() {
   strokeWeight(2);
 }
 
+/// --- メイン描画処理 ---
 function draw() {
-  console.log("drewing...");
-  // --- 音エネルギーで色の振動を強調 ---
+  /// 背景に虹色のグラデーション
   let energy = fft.getEnergy("bass");
-  let hue = (frameCount * 0.5 + energy * 0.5) % 360;
-
-  // --- 虹色グラデーション背景（滲みのような演出） ---
-  fill(hue, 80, 40, 10); // 彩度80, 明度40, 透明度10%
+  let hue = (frameCount * 0.5 + energy) % 360;
+  fill(hue, 80, 40, 8); // ゆらぎのある背景色
   noStroke();
-  rect(0, 0, width, height); // 透明な色で背景を重ねて塗る
+  rect(0, 0, width, height);
 
+  /// 再生中の音がロードされていればビジュアライズ実行
   if (sound && sound.isLoaded()) {
+    // 安定のため再接続チェック
+    if (sound.isPlaying() && fft.input !== sound) {
+      fft.setInput(sound);
+    }
+
+    /// 波形の描画
     let waveform = fft.waveform();
-    
-    // --- 波形描画 ---
     stroke(255);
     noFill();
     beginShape();
@@ -63,18 +66,18 @@ function draw() {
     }
     endShape();
 
-    // --- 帯域エネルギー取得 ---
+    /// 帯域エネルギーの取得
     let bass = fft.getEnergy("bass");
     let mid = fft.getEnergy("mid");
     let hi = fft.getEnergy("treble");
 
-    // --- 帯域バー描画（下から上）---
+    /// 左下にバーで帯域を可視化
     noStroke();
-    fill(0, 255, 128);   rect(50, height - bass, 30, bass);  // bass: 緑
-    fill(255, 180, 0);   rect(100, height - mid, 30, mid);   // mid: オレンジ
-    fill(255, 50, 100);  rect(150, height - hi, 30, hi);     // hi: ピンク
+    fill(0, 255, 128);   rect(50, height - bass, 30, bass);  // bass
+    fill(255, 180, 0);   rect(100, height - mid, 30, mid);   // mid
+    fill(255, 50, 100);  rect(150, height - hi, 30, hi);     // hi
 
-    // --- デバッグ情報表示 ---
+    /// デバッグ情報を更新
     infoDiv.html(`
       waveform.length: ${waveform.length}<br/>
       isPlaying: ${sound.isPlaying()}<br/>
@@ -86,6 +89,7 @@ function draw() {
   }
 }
 
+/// --- 再生・停止の切り替え（フェード付き） ---
 function togglePlay() {
   getAudioContext().resume().then(() => {
     if (!sound || !sound.isLoaded()) return;
@@ -99,12 +103,18 @@ function togglePlay() {
     } else {
       sound.setVolume(0);
       sound.play();
-      fft.setInput(sound);
+
+      // 🔥 再生後にfftを再接続（GitHub Pages対策）
+      setTimeout(() => {
+        fft.setInput(sound);
+      }, 100);
+
       sound.setVolume(1, 1); // フェードイン
     }
   });
 }
 
+/// --- ウィンドウリサイズに対応 ---
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
