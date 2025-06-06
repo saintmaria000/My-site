@@ -107,7 +107,7 @@ function drawGradientBackground() {
       : hueNew;
 
     let alpha = map(progress, 0, 1, 30, 0);
-    fill(hue, 50, 60, alpha); // 彩度低めで優しく
+    fill(hue,100, 60, alpha); // 彩度低めで優しく
     noStroke();
 
     rect(0, baseY - offset, width, 1);
