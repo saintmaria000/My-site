@@ -43,11 +43,11 @@ function draw() {
   // 必須：getEnergy用
   let spectrum = fft.analyze();
 
-  // 虹グラデ背景
-  drawGradientBackground();
-
   // 波形を毎フレームクリアしてから再描画
   clearWaveformArea();
+
+  // 虹グラデ背景
+  drawGradientBackground();
 
   if (sound && sound.isLoaded()) {
     let waveform = fft.waveform();
