@@ -39,6 +39,7 @@ function setup() {
 }
 
 function draw() {
+  console.log("drewing...");
   // --- 音エネルギーで色の振動を強調 ---
   let energy = fft.getEnergy("bass");
   let hue = (frameCount * 0.5 + energy * 0.5) % 360;
