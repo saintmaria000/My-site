@@ -44,7 +44,9 @@ function draw() {
   if (sound && sound.isPlaying() && fft.input !== sound) {
     fft.setInput(sound);
   }
-    
+  // 🔥 ここで解析処理を実行（これがないと getEnergy() が効かない！）
+  let spectrum = fft.analyze();
+  
   /// 背景に虹色のグラデーション
   let energy = fft.getEnergy("bass");
   let hue = (frameCount * 0.5 + energy) % 360;
