@@ -87,7 +87,7 @@ function draw() {
 // --- 虹グラデーション背景 ---
 function drawGradientBackground() {
   let baseY = height / 2;
-  let speed = 0.5;                 // ゆっくり広がる
+  let speed = 0.8;                 // ゆっくり広がる
   let layers = 300;
   let max = height / 2;
   let cycle = max * 1.5;           // 拡がる距離＋遷移領域
