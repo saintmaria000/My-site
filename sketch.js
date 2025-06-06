@@ -48,11 +48,19 @@ function draw() {
   let spectrum = fft.analyze();
   
   /// 背景に虹色のグラデーション
-  let energy = fft.getEnergy("bass");
-  let hue = (frameCount * 0.5 + energy) % 360;
-  fill(hue, 80, 40, 8); // ゆらぎのある背景色
-  noStroke();
-  rect(0, 0, width, height);
+  // === 中央線から上下に虹色グラデーションが広がる背景 ===
+  let baseY = height / 2; // 中央線（波形の中心）
+  let maxSpread = height / 2; // 上下にどれだけ広がるか
+  let hueBase = (frameCount * 0.5) % 360;
+
+  for (let offset = 0; offset < maxSpread; offset += 2) {
+    let alpha = map(offset, 0, maxSpread, 20, 0); // 遠くなるほど透明に
+    let hue = (hueBase + offset) % 360;
+    fill(hue, 80, 60, alpha);
+    noStroke();
+    rect(0, baseY - offset, width, 2); // 上方向
+    rect(0, baseY + offset, width, 2); // 下方向
+  }
 
   /// 再生中の音がロードされていればビジュアライズ実行
   if (sound && sound.isLoaded()) {
