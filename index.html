@@ -4,38 +4,39 @@
   <meta charset="UTF-8">
   <title>Audio Visualizer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSSの読み込み -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- p5.js & p5.sound CDN -->
+  <!-- ___ここから p5.jsの読み込み___ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
 </head>
+
 <body>
-  <div class ="logo">
+
+  <!-- ___ここからロゴ表示セクション___ -->
+  <div class="logo">
     <img src="logo.png" alt="Logo" id="logo" />
   </div>
-  <!-- ハンバーガーメニュー -->
 
+  <!-- ___ここからハンバーガーメニュー（UIとファイル入力）___ -->
   <nav id="hamburger-nav">
-  <input type="checkbox" id="menu-toggle" hidden />
-  <label for="menu-toggle" class="menu-icon">&#9776;</label>
-    
-  <div id="cover">
-    <h1>🎵 Audio Visualizer</h1>
-    <input type="file" id="file-input" accept="audio/*" />
-  </div>
+    <input type="checkbox" id="menu-toggle" hidden />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
 
-  <!--<div class="menu-content">
-    <h1>🎵 Audio Visualizer</h1>
-    <input type="file" id="file-input" accept="audio/*" />
-  </div>-->
-    
-</nav>
+    <div id="cover">
+      <h1>🎵 Audio Visualizer</h1>
+      <input type="file" id="file-input" accept="audio/*" />
+    </div>
+  </nav>
 
+  <!-- ___ここから再生ボタンUI___ -->
   <div id="ui">
     <button id="toggle-btn">▶ Play / Pause</button>
   </div>
 
+  <!-- ___ここからスケッチスクリプト読み込み___ -->
   <script src="sketch.js"></script>
 </body>
 </html>
