@@ -22,6 +22,8 @@ function draw() {
 
   fft.analyze();
   background(0);
+  ambientLight(150); // 柔らかい全体光（必須）
+  pointLight(255, 255, 255, 0, 0, 0); // 中央から白い光を放つ
   drawGalaxyVisual(); // visual2.js の関数を実行
 
   if (sound && sound.isLoaded()) {
