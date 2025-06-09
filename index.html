@@ -9,12 +9,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
 </head>
 <body>
-  <!-- ___ここからロゴ表示セクション___ -->
+  <!-- ___ロゴ表示セクション___ -->
   <div id="header">
     <img src="logo.png" alt="Logo" id="logo" />
   </div>
 
-  <!-- ___ここからハンバーガーメニュー（UIとファイル入力）___ -->
+  <!-- ___ハンバーガーメニュー（UIとファイル入力）___ -->
   <nav id="hamburger-nav">
     <input type="checkbox" id="menu-toggle" hidden />
     <label for="menu-toggle" class="menu-icon">&#9776;</label>
@@ -25,20 +25,24 @@
     </div>
   </nav>
 
-  <!-- ___ここから再生ボタンUI___ -->
+  <!-- ___再生ボタンUI___ -->
   <div id="ui">
     <button id="toggle-btn">▶ Play / Pause</button>
   </div>
+
+  <!-- ___Visual切替セレクター___ -->
   <div id="mode-select">
     <select id="visual-selector">
       <option value="1">Color Spread</option>
       <option value="2">Galaxy Visual</option>
     </select>
   </div>
-  
+
+  <!-- ___各種スクリプト読み込み（順序重要）___ -->
   <script src="ui.js"></script>
   <script src="audio.js"></script>
   <script src="visual.js"></script>
+  <script src="visual2.js"></script> <!-- ← 必須：Galaxy Visual -->
   <script src="sketch.js"></script>
 </body>
 </html>
