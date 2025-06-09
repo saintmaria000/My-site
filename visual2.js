@@ -68,13 +68,12 @@ function drawGalaxyVisual() {
     let p = stars[i];
     push();
     translate(p.x, p.y, p.z);
-    //fill(255);
     // HSB → RGB に変換して emissiveMaterial に渡す
     colorMode(HSB, 360, 100, 100);
     let col = color(hue, 100, 100);
     colorMode(RGB, 255);
-    emissiveMaterial(red(col), green(col), blue(col));
-
+    //emissiveMaterial(red(col), green(col), blue(col));
+    fill(255, 0, 0);
     sphere(2);
     pop();
   }
