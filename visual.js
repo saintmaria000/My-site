@@ -1,7 +1,7 @@
 let colorSpread = 0;
 let currentHue = 0;
 let nextHue = 60;
-let step = 4;
+let step = 2;
 let maxOffset;
 
 function drawColorFillSpread() {
@@ -18,7 +18,7 @@ function drawColorFillSpread() {
       : 1;
 
     let hue = lerp(currentHue, nextHue, t);
-    let alpha = map(offset, 0, maxOffset, 100, 0);  // 徐々に薄くなる
+   // let alpha = map(offset, 0, maxOffset, 100, 0);  // 徐々に薄くなる
 
     fill(hue % 360, 100, 80, alpha);
 
