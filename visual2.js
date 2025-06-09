@@ -1,38 +1,35 @@
 // === visual2.js ===
-// 【役割】Galaxy Visual: 星々が銀河の腕に沿って3D空間に描画される。中心には音量に反応するスフィアが鼓動する。
+// 【Galaxy Visual】星々が腕に沿って配置され、中心スフィアが鼓動する3D表現
 
 let stars = [];
 let limStars = 500;
 let RANGE = 600;
 
 /**
- * 初期化関数：銀河風に星を配置する
+ * 銀河風に星を初期化
  */
 function initGalaxyStars() {
-  let arms = 7;              // 銀河の腕の数
-  let spread = 0.5;          // 星のばらつき具合
-  stars = [];                // 初期化
+  let arms = 7;
+  let spread = 0.5;
+  stars = [];
 
   for (let i = 0; i < limStars; i++) {
     let arm = i % arms;
     let distance = random(50, RANGE);
     let angle = arm / arms * TWO_PI + distance * 0.02;
-    angle += sin(distance * 0.1 + frameCount * 0.01) * 0.3;  // うねりを追加
+    angle += sin(distance * 0.1 + frameCount * 0.01) * 0.3;
 
     let x = distance * cos(angle) + randomGaussian() * distance * spread;
     let y = distance * sin(angle) + randomGaussian() * distance * spread;
     let z = random(-RANGE / 4, RANGE / 4);
 
-    let hue = map(distance, 50, RANGE, 180, 300); // 外側ほど青く
-    let saturation = map(distance, 50, RANGE, 0, 100); // 中心：無彩色 → 外側：彩度高い
-    let brightness = map(distance, 50, RANGE, 100, 80); // 明度も少し落とす
-    fill(hue, saturation, brightness);
+    let hue = map(distance, 50, RANGE, 180, 300);
     stars.push(new Star(x, y, z, hue));
   }
 }
 
 /**
- * 星オブジェクト
+ * 星クラス
  */
 class Star {
   constructor(x, y, z, hue) {
@@ -44,42 +41,40 @@ class Star {
 }
 
 /**
- * メイン描画関数：Galaxy Visualを描画
- * - 中央に音量でサイズが変わるスフィア
- * - 星は銀河の腕にそって3D空間に回転
+ * 描画関数：Galaxy Visual
  */
 function drawGalaxyVisual() {
-  orbitControl(); // マウス操作でカメラ制御
-  ambientLight(150); // 柔らかい全体光（必須）
-  pointLight(255, 255, 255, 0, 0, 200); // 中央から白い光を放つ
-  
+  orbitControl();
+
+  // === ライティング ===
+  ambientLight(100);                           // 全体を柔らかく照らす
+  pointLight(255, 255, 255, 0, 0, 200);        // 中央から光を照射
+
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
   let size = 9 + rms * 200;
 
   push();
   noStroke();
-  specularMaterial(255);   // 反射材質（ハイライト）
-  shininess(50);          // ハイライト強度
-  //fill(100, 100, 100); // 明るい中心色（黄系）
+  specularMaterial(255);                       // 光沢マテリアル
+  shininess(60);
   sphere(size);
   pop();
 
-  // === 星を描画（銀河の腕風） ===
-  rotateY(frameCount * 0.002); // ゆっくり回転
+  // === 星々 ===
+  rotateY(frameCount * 0.002);
   noStroke();
   for (let i = 0; i < stars.length; i++) {
     let p = stars[i];
     push();
     translate(p.x, p.y, p.z);
-    let col;
+
+    // HSB → RGB に変換して emissiveMaterial に渡す
     colorMode(HSB, 360, 100, 100);
-    col = color(p.hue, 80, 100);
+    let col = color(p.hue, 80, 100);
     colorMode(RGB, 255);
     emissiveMaterial(red(col), green(col), blue(col));
-    // 色の発光（fillの代わり）
-    //emissiveMaterial(p.hue, 100, 100); // 自ら光る星
-    //fill(p.hue, 60, 100); // hueに応じて色分け
+
     sphere(2);
     pop();
   }
