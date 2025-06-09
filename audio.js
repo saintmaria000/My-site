@@ -1,5 +1,4 @@
-let sound, fft;
-let amplitude;
+let sound, fft, amplitude;
 
 function preload() {
   sound = loadSound('music/magiceffect.mp3');
