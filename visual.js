@@ -8,6 +8,9 @@ function drawColorFillSpread() {
   let baseY = height / 2;
   maxOffset = height / 2;
   let gradientHeight = 60;
+  let waveAmp = 20;              // 波の振幅（高さ）
+  let waveFreq = 0.02;           // 波の周波数
+  let waveSpeed = 0.05;          // 波の進み速度
 
   noStroke();
 
@@ -17,13 +20,16 @@ function drawColorFillSpread() {
       ? map(offset, colorSpread - gradientHeight, colorSpread, 0, 1)
       : 1;
 
-    // 🔧 色相を滑らかに補間
     let hue = lerpHue(currentHue, nextHue, t);
     let alpha = map(offset, 0, maxOffset, 100, 0);
 
     fill(hue % 360, 100, 80, alpha);
-    rect(0, baseY - offset, width, 1);
-    rect(0, baseY + offset, width, 1);
+
+    // 横方向の揺れ（sin波）
+    let waveOffset = sin((offset * waveFreq) + frameCount * waveSpeed) * waveAmp;
+
+    rect(waveOffset, baseY - offset, width, 1);
+    rect(waveOffset, baseY + offset, width, 1);
   }
 
   colorSpread += step;
@@ -35,11 +41,12 @@ function drawColorFillSpread() {
   }
 }
 
+// --- 色相を360度環で補間する関数 ---
 function lerpHue(a, b, t) {
   let d = b - a;
   if (abs(d) > 180) {
     if (d > 0) a += 360;
-    else b += 360;
+    else       b += 360;
   }
   return (lerp(a, b, t) + 360) % 360;
 }
