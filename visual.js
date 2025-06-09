@@ -7,27 +7,23 @@ let maxOffset;
 function drawColorFillSpread() {
   let baseY = height / 2;
   maxOffset = height / 2;
-  let gradientHeight = 80;
+  let gradientHeight = 60;
 
   noStroke();
 
   for (let offset = 0; offset <= colorSpread && offset <= maxOffset; offset++) {
-    let isGradientZone = offset > colorSpread - gradientHeight;
+    let isGradientZone = (offset > colorSpread - gradientHeight);
     let t = isGradientZone
       ? map(offset, colorSpread - gradientHeight, colorSpread, 0, 1)
       : 1;
 
-    let hue = lerp(currentHue, nextHue, t);
-    let fade = map(offset, 0, maxOffset, 1, 0);
-    let alpha = isGradientZone
-      ? 100 * fade * pow(t, 2)
-      : 100 * fade;
+    // 🔧 色相を滑らかに補間
+    let hue = lerpHue(currentHue, nextHue, t);
+    let alpha = map(offset, 0, maxOffset, 100, 0);
 
     fill(hue % 360, 100, 80, alpha);
-
-    // 🌊 Y位置を波形に変形
-    let waveOffset = sin((offset + frameCount * 2) * 0.05) * 10; // 波の高さ＆速さ
-
+    rect(0, baseY - offset, width, 1);
+    rect(0, baseY + offset, width, 1);
   }
 
   colorSpread += step;
@@ -37,6 +33,15 @@ function drawColorFillSpread() {
     currentHue = nextHue;
     nextHue = (nextHue + 60) % 360;
   }
+}
+
+function lerpHue(a, b, t) {
+  let d = b - a;
+  if (abs(d) > 180) {
+    if (d > 0) a += 360;
+    else b += 360;
+  }
+  return (lerp(a, b, t) + 360) % 360;
 }
 
 function drawWaveform() {
