@@ -14,7 +14,6 @@ function setupUI() {
          .style('padding', '10px')
          .style('border-radius', '6px')
          .style('z-index', '10');
-  const visualSelector = select('#visual-selector');
 }
 
 function updateDebugInfo(data) {
