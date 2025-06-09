@@ -14,6 +14,11 @@ function setupUI() {
          .style('padding', '10px')
          .style('border-radius', '6px')
          .style('z-index', '10');
+  const visualSelector = select('#visual-selector');
+  visualSelector.changed(() => {
+    const val = parseInt(visualSelector.value());
+    switchVisual(val);
+  });
 }
 
 function updateDebugInfo(data) {
