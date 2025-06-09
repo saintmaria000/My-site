@@ -48,7 +48,7 @@ function drawGalaxyVisual() {
 
   // === ライティング ===
   ambientLight(150);                           // 全体を柔らかく照らす
-  //pointLight(255, 255, 255, 0, 0, 200);        // 中央から光を照射
+  pointLight(255, 255, 255, 0, 0, 200);        // 中央から光を照射
 
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
