@@ -1,50 +1,60 @@
+// --- グローバル変数 ---
 let colorSpread = 0;
-let currentHue = 0;
-let nextHue = 60;
+let prevHue = 0;
+let currentHue = 60;
+let nextHue = 120;
 let step = 2;
 let maxOffset;
 
 function drawColorFillSpread() {
   let baseY = height / 2;
   maxOffset = height / 2;
-  let gradientHeight = 60;
+  let gradientHeight = 80; // グラデーションの範囲（大きくすると滑らか）
 
   noStroke();
 
   for (let offset = 0; offset <= colorSpread && offset <= maxOffset; offset++) {
-    let isGradientZone = (offset > colorSpread - gradientHeight);
+    // グラデーションゾーン判定
+    let isGradientZone = offset > colorSpread - gradientHeight;
+
+    // 補間係数 t（0〜1）
     let t = isGradientZone
       ? map(offset, colorSpread - gradientHeight, colorSpread, 0, 1)
       : 1;
 
+    // イージングをかけて滑らかに
     t = constrain(t, 0, 1);
-    t = pow(t, 2.5); // ← 滑らかなイージンググラデーション
+    t = pow(t, 2.2);
 
-    let hue = lerpHue(currentHue, nextHue, t);
-    let g = map(offset, 0, maxOffset, 0, 1);
-    g = pow(t, 2.0); // 徐々に消える
-    let alpha = lerp(100, 0, g);
+    // 色相を過去の色 → 現在の色で補間
+    let hue = lerpHue(prevHue, currentHue, t);
+
+    // 徐々に透明になる alpha
+    let alpha = map(offset, 0, maxOffset, 100, 0);
 
     fill(hue % 360, 100, 80, alpha);
     rect(0, baseY - offset, width, 1);
     rect(0, baseY + offset, width, 1);
   }
 
+  // 拡がり更新
   colorSpread += step;
 
-  if (colorSpread > maxOffset + 1) {
+  // 拡がりが画面を覆ったら次の色へ
+  if (colorSpread > maxOffset) {
     colorSpread = 0;
+    prevHue = currentHue;
     currentHue = nextHue;
     nextHue = (nextHue + 60) % 360;
   }
 }
 
-// --- 色相環の補間 ---
+// --- 色相環の補間（360度対応） ---
 function lerpHue(a, b, t) {
   let d = b - a;
   if (abs(d) > 180) {
     if (d > 0) a += 360;
-    else b += 360;
+    else       b += 360;
   }
   return (lerp(a, b, t) + 360) % 360;
 }
