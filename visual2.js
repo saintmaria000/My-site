@@ -87,4 +87,5 @@ function HSBtoRGB(h, s, b) {
     r: red(c),
     g: green(c),
     b: blue(c)
-  };
+  }
+}
