@@ -1,10 +1,3 @@
-// --- グローバル変数 ---
-let currentHue = 0;
-let nextHue = 60;
-let colorSpread = 0;
-let step = 4;
-let maxOffset;
-
 // --- 初期化 ---
 function setup() {
   createCanvas(windowWidth, windowHeight); // ← 2D Canvas
