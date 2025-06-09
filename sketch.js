@@ -1,10 +1,5 @@
 // --- グローバル変数 ---
 let currentVisual = 1;  // 1 = colorSpread, 2 = galaxy
-let currentHue = 0;
-let nextHue = 60;
-let colorSpread = 0;
-let step = 4;
-let maxOffset;
 
 // --- 初期化 ---
 function setup() {
