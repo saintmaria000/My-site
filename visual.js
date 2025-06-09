@@ -41,3 +41,22 @@ function drawColorFillSpread() {
     nextHue = (nextHue + 60) % 360;
   }
 }
+
+function drawWaveform() {
+  let waveform = fft.waveform();
+  stroke(255);
+  noFill();
+  beginShape();
+  for (let i = 0; i < waveform.length; i++) {
+    let x = map(i, 0, waveform.length, 0, width);
+    let y = map(waveform[i], -1, 1, height * 0.25, height * 0.75);
+    curveVertex(x, y);
+  }
+  endShape();
+}
+
+function clearWaveformArea() {
+  fill(0, 0, 0, 80);
+  noStroke();
+  rect(0, 0, width, height);
+}
