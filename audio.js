@@ -6,8 +6,10 @@ function preload() {
 
 function setupAudio() {
   fft = new p5.FFT();
-  amplitude = new p5.amplitude();
-  let button = select('#toggle-btn');
+  amplitude = new p5.Amplitude();
+  amplitude.setInput(sound); // ⭐ 重要
+
+  const button = select('#toggle-btn');
   button.mousePressed(togglePlay);
 }
 
