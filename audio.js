@@ -1,8 +1,8 @@
 let sound, fft, amplitude;
 
-function preload() {
-  sound = loadSound('music/magiceffect.mp3');
-}
+//function preload() {
+//  sound = loadSound('music/magiceffect.mp3');
+//}
 
 function setupAudio() {
   fft = new p5.FFT();
