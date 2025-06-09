@@ -21,6 +21,10 @@ function drawColorFillSpread() {
     let alpha = map(offset, 0, maxOffset, 100, 0);
 
     fill(hue % 360, 100, 80, alpha);
+
+    rect(0, baseY - offset, width, 1);
+    rect(0, baseY + offset, width, 1);
+    
   }
 
   colorSpread += step;
