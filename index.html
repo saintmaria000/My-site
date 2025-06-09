@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Audio Visualizer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- CSSの読み込み -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- ___ここから p5.jsの読み込み___ -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
 </head>
-
 <body>
-
   <!-- ___ここからロゴ表示セクション___ -->
   <div id="header">
     <img src="logo.png" alt="Logo" id="logo" />
@@ -35,8 +29,10 @@
   <div id="ui">
     <button id="toggle-btn">▶ Play / Pause</button>
   </div>
-
-  <!-- ___ここからスケッチスクリプト読み込み___ -->
+  
+  <script src="ui.js"></script>
+  <script src="audio.js"></script>
+  <script src="visual.js"></script>
   <script src="sketch.js"></script>
 </body>
 </html>
