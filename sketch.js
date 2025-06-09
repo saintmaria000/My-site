@@ -83,37 +83,38 @@ function draw() {
 
 // --- 中央から広がる虹グラデーション背景 ---
 function drawGradientBackground() {
-  let baseY = height / 2;
-  let speed = 0.8;        // 拡がる速さ
-  let layers = 500;       // レイヤーの密度（多いほどなめらか）
-  let max = height / 2;
-  let cycle = max * 1.5;
-  let spread = frameCount * speed % (max + cycle); // 拡がりの進行度
+  const baseY = height / 2;
+  const speed = 0.8;              // 拡がるスピード
+  const layers = 500;             // 拡がりのレイヤー数（密度）
+  const max = height / 2;
+  const cycle = max * 1.5;
+  const spread = frameCount * speed % (max + cycle);  // 現在の拡がり距離
 
-  let hueNew = (frameCount * 0.2) % 360;      // 新しい色（HSBで周期的に変化）
-  let hueOld = (hueNew + 30) % 360;           // 混ぜる旧色（次の色）
+  const hueNew = (frameCount * 0.2) % 360;            // 今回の主色
+  const hueOld = (hueNew + 60) % 360;                 // 前の色との補間
 
   for (let i = 0; i < layers; i++) {
-    let offset = i * (max / layers);
-    let progress = offset / spread;
+    const offset = i * (max / layers);
+    const progress = offset / spread;
+    if (progress > 1) continue;
 
-    if (progress > 1) continue; // まだ拡がっていない層は描かない
-
-    // グラデ境界だけ色を混ぜる、それ以外はほぼ単色
-    let gradStart = 0.95;
-      let t = constrain(map(progress, gradStart, 1, 1, 0), 0, 1);
-    let hue = (progress > gradStart)
+    // グラデーション境界だけ補間、それ以外は単色
+    const gradStart = 0.95;
+    const t = constrain(map(progress, gradStart, 1, 1, 0), 0, 1);
+    const hue = (progress > gradStart)
       ? lerpHue(hueOld, hueNew, pow(t, 2))
       : hueNew;
 
-    let alpha = map(progress, 0, 1, 70, 0); // 徐々に薄く
-    fill(hue, 100, 80, alpha);             // 彩度高めで鮮やかに
+    const alpha = map(progress, 0, 1, 80, 0); // やや濃く、遠くへ徐々に消える
+    fill(hue, 100, 90, alpha);               // 彩度・明度ともに高く鮮やか
     noStroke();
+
     rect(0, baseY - offset, width, 1);
     rect(0, baseY + offset, width, 1);
   }
 }
-// --- 色相環補間（360度対応のlerp） ---
+
+// --- 色相を滑らかに補間（色相環対応） ---
 function lerpHue(a, b, t) {
   let d = b - a;
   if (abs(d) > 180) {
