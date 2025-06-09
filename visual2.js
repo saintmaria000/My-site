@@ -16,13 +16,17 @@ function initGalaxyStars() {
   for (let i = 0; i < limStars; i++) {
     let arm = i % arms;
     let distance = random(50, RANGE);
-    let angle = arm / arms * TWO_PI + distance * 0.02 + random(-0.5, 0.5);
+    let angle = arm / arms * TWO_PI + distance * 0.02;
+    angle += sin(distance * 0.1 + frameCount * 0.01) * 0.3;  // うねりを追加
 
     let x = distance * cos(angle) + randomGaussian() * distance * spread;
     let y = distance * sin(angle) + randomGaussian() * distance * spread;
     let z = random(-RANGE / 4, RANGE / 4);
 
     let hue = map(distance, 50, RANGE, 180, 300); // 外側ほど青く
+    let saturation = map(distance, 50, RANGE, 0, 100); // 中心：無彩色 → 外側：彩度高い
+    let brightness = map(distance, 50, RANGE, 100, 80); // 明度も少し落とす
+    fill(hue, saturation, brightness);
     stars.push(new Star(x, y, z, hue));
   }
 }
