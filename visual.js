@@ -21,9 +21,9 @@ function drawColorFillSpread() {
     t = pow(t, 2.5); // ← 滑らかなイージンググラデーション
 
     let hue = lerpHue(currentHue, nextHue, t);
-    let t = map(offset, 0, maxOffset, 0, 1);
-    t = pow(t, 2.0); // 徐々に消える
-    let alpha = lerp(100, 0, t);
+    let g = map(offset, 0, maxOffset, 0, 1);
+    g = pow(t, 2.0); // 徐々に消える
+    let alpha = lerp(100, 0, g);
 
     fill(hue % 360, 100, 80, alpha);
     rect(0, baseY - offset, width, 1);
