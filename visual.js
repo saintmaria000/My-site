@@ -28,9 +28,6 @@ function drawColorFillSpread() {
     // 🌊 Y位置を波形に変形
     let waveOffset = sin((offset + frameCount * 2) * 0.05) * 10; // 波の高さ＆速さ
 
-    // 上下にうねる
-    rect(0, baseY - offset + waveOffset, width, 1);
-    rect(0, baseY + offset + waveOffset, width, 1);
   }
 
   colorSpread += step;
