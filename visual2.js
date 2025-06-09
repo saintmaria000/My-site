@@ -47,9 +47,9 @@ function drawGalaxyVisual() {
   orbitControl();
 
   // === ライティング ===
-  lights();
-  ambientLight(255);                           // 全体を柔らかく照らす
-  pointLight(255, 255, 255, 0, 0, 200);        // 中央から光を照射
+  //lights();
+  //ambientLight(255);                           // 全体を柔らかく照らす
+  //pointLight(255, 255, 255, 0, 0, 200);        // 中央から光を照射
 
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
@@ -57,8 +57,9 @@ function drawGalaxyVisual() {
 
   push();
   noStroke();
-  specularMaterial(255);                       // 光沢マテリアル
-  shininess(60);
+  //specularMaterial(255);                       // 光沢マテリアル
+  //shininess(60);
+  fill(255);
   sphere(size);
   pop();
 
@@ -70,9 +71,9 @@ function drawGalaxyVisual() {
     push();
     translate(p.x, p.y, p.z);
     // HSB → RGB に変換して emissiveMaterial に渡す
-    let col = HSBtoRGB(p.hue, 100, 100);
-    emissiveMaterial(col.r, col.g, col.b);
-    //fill(255, 0, 0);
+    //let col = HSBtoRGB(p.hue, 100, 100);
+    //emissiveMaterial(col.r, col.g, col.b);
+    fill(p.hue, 100, 100);
     sphere(2);
     pop();
   }
