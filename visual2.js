@@ -47,6 +47,7 @@ function drawGalaxyVisual() {
   orbitControl();
 
   // === ライティング ===
+  lights();
   ambientLight(255);                           // 全体を柔らかく照らす
   pointLight(255, 255, 255, 0, 0, 200);        // 中央から光を照射
 
