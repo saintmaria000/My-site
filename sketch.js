@@ -101,8 +101,9 @@ function drawGradientBackground() {
 
     // グラデ境界だけ色を混ぜる、それ以外はほぼ単色
     let gradStart = 0.95;
+      let t = constrain(map(progress, gradStart, 1, 1, 0), 0, 1);
     let hue = (progress > gradStart)
-      ? lerp(hueOld, hueNew, map(progress, gradStart, 1, 1, 0))
+      ? lerpHue(hueOld, hueNew, pow(t, 2))
       : hueNew;
 
     let alpha = map(progress, 0, 1, 70, 0); // 徐々に薄く
@@ -111,6 +112,18 @@ function drawGradientBackground() {
     rect(0, baseY - offset, width, 1);
     rect(0, baseY + offset, width, 1);
   }
+}
+// --- 色相環補間（360度対応のlerp） ---
+function lerpHue(a, b, t) {
+  let d = b - a;
+  if (abs(d) > 180) {
+    if (d > 0) {
+      a += 360;
+    } else {
+      b += 360;
+    }
+  }
+  return (lerp(a, b, t) + 360) % 360;
 }
 
 // --- 波形エリアだけを消す（残像防止）---
