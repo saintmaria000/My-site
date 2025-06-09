@@ -2,15 +2,15 @@
 // 【役割】Galaxy Visual: 星々が銀河の腕に沿って3D空間に描画される。中心には音量に反応するスフィアが鼓動する。
 
 let stars = [];
-let limStars = 300;
+let limStars = 500;
 let RANGE = 600;
 
 /**
  * 初期化関数：銀河風に星を配置する
  */
 function initGalaxyStars() {
-  let arms = 4;              // 銀河の腕の数
-  let spread = 0.3;          // 星のばらつき具合
+  let arms = 7;              // 銀河の腕の数
+  let spread = 0.5;          // 星のばらつき具合
   stars = [];                // 初期化
 
   for (let i = 0; i < limStars; i++) {
@@ -49,7 +49,7 @@ function drawGalaxyVisual() {
 
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
-  let size = 10 + rms * 200;
+  let size = 9 + rms * 200;
 
   push();
   noStroke();
