@@ -50,6 +50,8 @@ class Star {
  */
 function drawGalaxyVisual() {
   orbitControl(); // マウス操作でカメラ制御
+  ambientLight(150); // 柔らかい全体光（必須）
+  pointLight(255, 255, 255, 0, 0, 0); // 中央から白い光を放つ
   
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
@@ -70,8 +72,13 @@ function drawGalaxyVisual() {
     let p = stars[i];
     push();
     translate(p.x, p.y, p.z);
+    let col;
+    colorMode(HSB, 360, 100, 100);
+    col = color(p.hue, 80, 100);
+    colorMode(RGB, 255);
+    emissiveMaterial(red(col), green(col), blue(col));
     // 色の発光（fillの代わり）
-    emissiveMaterial(p.hue, 100, 100); // 自ら光る星
+    //emissiveMaterial(p.hue, 100, 100); // 自ら光る星
     //fill(p.hue, 60, 100); // hueに応じて色分け
     sphere(2);
     pop();
