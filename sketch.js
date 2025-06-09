@@ -85,7 +85,7 @@ function draw() {
 function drawGradientBackground() {
   let baseY = height / 2;
   let speed = 0.8;        // 拡がる速さ
-  let layers = 300;       // レイヤーの密度（多いほどなめらか）
+  let layers = 500;       // レイヤーの密度（多いほどなめらか）
   let max = height / 2;
   let cycle = max * 1.5;
   let spread = frameCount * speed % (max + cycle); // 拡がりの進行度
@@ -100,7 +100,7 @@ function drawGradientBackground() {
     if (progress > 1) continue; // まだ拡がっていない層は描かない
 
     // グラデ境界だけ色を混ぜる、それ以外はほぼ単色
-    let gradStart = 0.85;
+    let gradStart = 0.95;
     let hue = (progress > gradStart)
       ? lerp(hueOld, hueNew, map(progress, gradStart, 1, 1, 0))
       : hueNew;
