@@ -22,7 +22,7 @@ function drawColorFillSpread() {
     t = constrain(t, 0, 1);
     t = pow(t, 2.2);
 
-    let hue = lerpHue(prevHue, currentHue, t); // ← 過去から現在へ補間
+    let hue = lerpHue(currentHue, prevHue, t); // ← 過去から現在へ補間
     fill(hue % 360, 100, 80, 100);
 
     rect(0, baseY - offset, width, 1);
