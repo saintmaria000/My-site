@@ -1,6 +1,10 @@
 // --- グローバル変数 ---
 let currentVisual = 2;
 
+function preload() {
+  sound = loadSound('music/magiceffect.mp3');
+}
+
 // --- 初期化 ---
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL); // ← 3Dモード
