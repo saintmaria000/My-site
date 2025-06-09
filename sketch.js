@@ -28,6 +28,7 @@ function draw() {
   if (currentVisual === 1) {
     drawColorFillSpread();
     drawWaveform();
+    clearWaveformArea();
   } else if (currentVisual === 2) {
     drawGalaxyVisual();  // visual2.js の関数
   }
