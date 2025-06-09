@@ -11,11 +11,8 @@
 <body>
   <div id="header">
     <img src="logo.png" alt="Logo" id="logo" />
-  </div>
-  
-  <div id="visual-menu">
-    <button onclick="location.href='index.html'">🎨 Color Spread</button>
-    <button onclick="location.href='galaxy.html'">🌌 Galaxy Visual</button>
+    <h1>🌌 Galaxy Visual</h1>
+    <a href="index.html" style="margin-top: 20px; color: cyan;">Color Spreadへ切替</a>
   </div>
   
   <nav id="hamburger-nav">
@@ -23,15 +20,15 @@
     <label for="menu-toggle" class="menu-icon">&#9776;</label>
 
     <div id="cover">
-      <h1>🌌 Galaxy Visual</h1>
-      <input type="file" id="file-input" accept="audio/*" />
-      <a href="index.html" style="margin-top: 20px; color: cyan;">Color Spreadへ切替</a>
+        <div id="visual-menu">
+          <button onclick="location.href='index.html'">🎨 Color Spread</button>
+          <button onclick="location.href='galaxy.html'">🌌 Galaxy Visual</button>
+        </div>
     </div>
   </nav>
 
   <div id="ui">
     <button id="toggle-btn">▶ Play / Pause</button>
-    <input type="file" id="file-input" />
     <span id="file-name-display">ファイル未設定</span>
 
   </div>
