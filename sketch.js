@@ -1,78 +1,75 @@
 // --- グローバル変数 ---
 let sound, fft, button, infoDiv;
 
-// --- 音声プリロード ---
+// --- 音声プリロード（最初にロードする曲）---
 function preload() {
   sound = loadSound('music/magiceffect.mp3');
 }
 
-// --- 初期化 ---
+// --- 初期設定 ---
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  colorMode(HSB, 360, 100, 100, 100);
-  fft = new p5.FFT();
+  colorMode(HSB, 360, 100, 100, 100); // HSBで色操作を柔軟に
 
+  fft = new p5.FFT(); // 周波数解析器
+
+  // 再生ボタン設定
   button = select('#toggle-btn');
   button.mousePressed(togglePlay);
 
-  infoDiv = createDiv('');
-  infoDiv.style('position', 'fixed')
-         .style('top', '50%')
-         .style('right', '20px')
-         .style('transform', 'translateY(-50%)')
-         .style('color', '#0f0')
-         .style('font-family', 'monospace')
-         .style('font-size', '14px')
-         .style('background', 'rgba(0, 0, 0, 0.5)')
-         .style('padding', '10px')
-         .style('border-radius', '6px')
-         .style('z-index', '10');
+  // デバッグUIのスタイル構築
+  infoDiv = createDiv('').style('position', 'fixed')
+    .style('top', '50%').style('right', '20px')
+    .style('transform', 'translateY(-50%)')
+    .style('color', '#0f0').style('font-family', 'monospace')
+    .style('font-size', '14px').style('background', 'rgba(0, 0, 0, 0.5)')
+    .style('padding', '10px').style('border-radius', '6px')
+    .style('z-index', '10');
 
-  noFill();
+  noFill();  // 初期化
   stroke(255);
   strokeWeight(2);
 }
 
-// --- 描画ループ ---
+// --- 毎フレーム描画処理 ---
 function draw() {
-  // FFT入力接続
+  // 再生中かつ接続が切れていたらFFTに再接続
   if (sound && sound.isPlaying() && fft.input !== sound) {
     fft.setInput(sound);
   }
 
-  // 必須：getEnergy用
+  // getEnergyが有効になる解析呼び出し（重要！）
   let spectrum = fft.analyze();
 
-  // 波形を毎フレームクリアしてから再描画
-  clearWaveformArea();
-
-  // 虹グラデ背景
-  drawGradientBackground();
+  clearWaveformArea();       // 背景を消さずに波形だけクリア
+  drawGradientBackground();  // 背景に虹グラデーションを描画
 
   if (sound && sound.isLoaded()) {
-    let waveform = fft.waveform();
+    let waveform = fft.waveform(); // 波形データ取得
     stroke(255);
     noFill();
-    let displayWidth = width * 0.6;  
-    
+
+    // 👇 横幅は画面全体、高さ方向は中央寄せで滑らかに
     beginShape();
     for (let i = 0; i < waveform.length; i++) {
-      let x = map(i, 0, waveform.length, 0, width);
-      let y = map(waveform[i], -1, 1, height * 0.25, height * 0.75);
-      curveVertex(x, y);
+      let x = map(i, 0, waveform.length, 0, width); // 横幅いっぱい
+      let y = map(waveform[i], -1, 1, height * 0.25, height * 0.75); // 上下にゆとり
+      curveVertex(x, y); // 滑らかな曲線
     }
-    
     endShape();
 
-    let bass = fft.getEnergy(20, 150);
-    let mid = fft.getEnergy(150, 4000);
-    let hi  = fft.getEnergy(4000, 12000);
+    // 👇 各帯域のエネルギー取得（独自に周波数範囲を設定）
+    let bass = fft.getEnergy(20, 150);       // 低域
+    let mid  = fft.getEnergy(150, 4000);     // 中域
+    let hi   = fft.getEnergy(4000, 12000);   // 高域
 
+    // 👇 可視化バー（左下）
     noStroke();
     fill(0, 255, 128);   rect(50,  height - bass, 30, bass);
-    fill(255, 180, 0);   rect(100, height - mid, 30, mid);
-    fill(255, 50, 100);  rect(150, height - hi, 30, hi);
+    fill(255, 180, 0);   rect(100, height - mid,  30, mid);
+    fill(255, 50, 100);  rect(150, height - hi,   30, hi);
 
+    // デバッグ表示更新
     infoDiv.html(`
       waveform.length: ${waveform.length}<br/>
       isPlaying: ${sound.isPlaying()}<br/>
@@ -84,54 +81,52 @@ function draw() {
   }
 }
 
-// --- 虹グラデーション背景 ---
+// --- 中央から広がる虹グラデーション背景 ---
 function drawGradientBackground() {
   let baseY = height / 2;
-  let speed = 0.8;                 // ゆっくり広がる
-  let layers = 300;
+  let speed = 0.8;        // 拡がる速さ
+  let layers = 300;       // レイヤーの密度（多いほどなめらか）
   let max = height / 2;
-  let cycle = max * 1.5;           // 拡がる距離＋遷移領域
-  let spread = frameCount * speed % (max + cycle);
+  let cycle = max * 1.5;
+  let spread = frameCount * speed % (max + cycle); // 拡がりの進行度
 
-  // 色のループ（赤→黄→緑→青→紫→赤）
-  let hueNew = (frameCount * 0.2) % 360;
-  let hueOld = (hueNew + 30) % 360; // 次の色と混ぜる差分（柔らかめ）
+  let hueNew = (frameCount * 0.2) % 360;      // 新しい色（HSBで周期的に変化）
+  let hueOld = (hueNew + 30) % 360;           // 混ぜる旧色（次の色）
 
   for (let i = 0; i < layers; i++) {
     let offset = i * (max / layers);
     let progress = offset / spread;
 
-    if (progress > 1) continue;
+    if (progress > 1) continue; // まだ拡がっていない層は描かない
 
-    // 色の境界付近のみグラデーション、それ以外は単色に近く
+    // グラデ境界だけ色を混ぜる、それ以外はほぼ単色
     let gradStart = 0.85;
     let hue = (progress > gradStart)
       ? lerp(hueOld, hueNew, map(progress, gradStart, 1, 1, 0))
       : hueNew;
 
-    let alpha = map(progress, 0, 1, 30, 0);
-    fill(hue,100, 60, alpha); // 彩度低めで優しく
+    let alpha = map(progress, 0, 1, 70, 0); // 徐々に薄く
+    fill(hue, 100, 80, alpha);             // 彩度高めで鮮やかに
     noStroke();
-
     rect(0, baseY - offset, width, 1);
     rect(0, baseY + offset, width, 1);
   }
 }
 
-// --- 波形の残像クリア（背景は消さない） ---
+// --- 波形エリアだけを消す（残像防止）---
 function clearWaveformArea() {
-  fill(0, 0, 0, 80); // HSBモードで透明な黒
+  fill(0, 0, 0, 80); // HSBの透明な黒
   noStroke();
   rect(0, 0, width, height);
 }
 
-// --- 再生/停止切り替え ---
+// --- 再生/停止切り替え（フェード付）---
 function togglePlay() {
   getAudioContext().resume().then(() => {
     if (!sound || !sound.isLoaded()) return;
 
     if (sound.isPlaying()) {
-      sound.setVolume(0, 1);
+      sound.setVolume(0, 1); // フェードアウト
       setTimeout(() => {
         sound.stop();
         sound.setVolume(1);
@@ -139,8 +134,8 @@ function togglePlay() {
     } else {
       sound.setVolume(0);
       sound.play();
-      setTimeout(() => fft.setInput(sound), 100);
-      sound.setVolume(1, 1);
+      setTimeout(() => fft.setInput(sound), 100); // 再接続（GitHub対策）
+      sound.setVolume(1, 1); // フェードイン
     }
   });
 }
