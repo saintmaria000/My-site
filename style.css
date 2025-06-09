@@ -20,7 +20,9 @@ canvas {
 
 /* === Header === */
 #header {
+  position: absolute;
   z-index: 7;
+  left: 20px;
 }
 #logo {
   width: 150px;
