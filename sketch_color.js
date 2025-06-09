@@ -21,6 +21,7 @@ function draw() {
 
   drawColorFillSpread();
   drawWaveform();
+  clearWaveformArea();
 
   if (sound && sound.isLoaded()) {
     const waveform = fft.waveform();
