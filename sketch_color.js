@@ -17,7 +17,7 @@ function draw() {
   }
 
   fft.analyze();
-  background(0);
+  //background(0);
 
   drawColorFillSpread();
   drawWaveform();
