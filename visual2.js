@@ -61,7 +61,7 @@ function drawGalaxyVisual() {
 
   push();
   noStroke();
-  specularMaterial(255);  // 反射材質（ハイライト）
+  ambientMaterial();  // 反射材質（ハイライト）
   shininess(50);          // ハイライト強度
   //fill(100, 100, 100); // 明るい中心色（黄系）
   sphere(size);
