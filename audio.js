@@ -5,6 +5,7 @@ let sound, fft, amplitude;
  */
 function setupAudio() {
   fft = new p5.FFT();
+  amplitude = new p5.amplitude();
   let button = select('#toggle-btn');
   button.mousePressed(togglePlay);
 }
