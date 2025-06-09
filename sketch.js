@@ -88,8 +88,8 @@ function drawGradientBackground() {
   const layers = 500;             // 拡がりのレイヤー数（密度）
   const max = height / 2;
   const cycle = max * 1.5;
-  const spread = frameCount * speed % (max + cycle);  // 現在の拡がり距離
-
+  let time = millis() * 0.001; // 秒単位で蓄積されていく時間
+  let spread = (time * speed) % (max + cycle); // 常に前に進む
   const hueNew = (frameCount * 0.2) % 360;            // 今回の主色
   const hueOld = (hueNew + 60) % 360;                 // 前の色との補間
 
