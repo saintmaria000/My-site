@@ -44,6 +44,7 @@ class Star {
  * 描画関数：Galaxy Visual
  */
 function drawGalaxyVisual() {
+  
   orbitControl();
 
   // === ライティング ===
