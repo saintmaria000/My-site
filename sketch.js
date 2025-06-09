@@ -1,5 +1,4 @@
 // --- グローバル変数 ---
-let sound, fft, amplitude;
 let currentVisual = 1;  // 1 = colorSpread, 2 = galaxy
 let currentHue = 0;
 let nextHue = 60;
