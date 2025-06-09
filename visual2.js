@@ -3,6 +3,9 @@ let stars = [];
 let limStars = 300;
 let RANGE = 600;
 
+let spectrum = fft.analyze();
+let rms = amplitude.getLevel();
+
  orbitControl(); // マウス操作で回転できる
 
   // 🌟 中央の鼓動するスフィア
