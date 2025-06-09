@@ -53,7 +53,7 @@ function drawGalaxyVisual() {
 
   push();
   noStroke();
-  fill(60, 80, 100); // 明るい中心色（黄系）
+  fill(100, 100, 100); // 明るい中心色（黄系）
   sphere(size);
   pop();
 
