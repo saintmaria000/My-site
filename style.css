@@ -22,7 +22,7 @@ canvas {
 #logo {
   width: 150px;
   margin: 20px;
-  z-index: 100;
+  z-index: 7;
 }
 
 
