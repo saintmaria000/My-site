@@ -13,23 +13,18 @@ function drawColorFillSpread() {
   noStroke();
 
   for (let offset = 0; offset <= colorSpread && offset <= maxOffset; offset++) {
-    // グラデーションゾーン判定
     let isGradientZone = offset > colorSpread - gradientHeight;
 
-    // 緩急つけたtを生成
     let t = isGradientZone
       ? map(offset, colorSpread - gradientHeight, colorSpread, 0, 1)
-      : 1;
+      : 0;
+
     t = constrain(t, 0, 1);
     t = pow(t, 2.2);
 
-    // ✅ 色相を「currentHue → prevHue」で補間（逆方向）
-    let hue = lerpHue(currentHue, prevHue, t);
+    let hue = lerpHue(prevHue, currentHue, t); // ← 過去から現在へ補間
+    fill(hue % 360, 100, 80, 100);
 
-    // alphaは必要に応じてオン
-    let alpha = 100;
-
-    fill(hue % 360, 100, 80, alpha);
     rect(0, baseY - offset, width, 1);
     rect(0, baseY + offset, width, 1);
   }
