@@ -70,12 +70,21 @@ function drawGalaxyVisual() {
     push();
     translate(p.x, p.y, p.z);
     // HSB → RGB に変換して emissiveMaterial に渡す
-    colorMode(HSB, 360, 100, 100);
-    let col = color(p.hue, 100, 100);
-    colorMode(RGB, 255);
-    emissiveMaterial(red(col), green(col), blue(col));
+    let col = HSBtoRGB(p.hue, 100, 100);
+    emissiveMaterial(col.r, col.g, col.b);
     //fill(255, 0, 0);
     sphere(2);
     pop();
   }
 }
+
+// --- HSB to RGB 安全変換関数 ---
+function HSBtoRGB(h, s, b) {
+  colorMode(HSB, 360, 100, 100);
+  let c = color(h % 360, s, b);
+  colorMode(RGB, 255); // 戻す
+  return {
+    r: red(c),
+    g: green(c),
+    b: blue(c)
+  }
