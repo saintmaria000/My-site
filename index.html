@@ -30,8 +30,10 @@
     <button id="toggle-btn">▶ Play / Pause</button>
   </div>
   <div id="mode-select">
-    <button onclick="setVisualMode('spread')">上塗り</button>
-    <button onclick="setVisualMode('galaxy')">銀河</button>
+    <select id="visual-selector">
+      <option value="1">Color Spread</option>
+      <option value="2">Galaxy Visual</option>
+    </select>
   </div>
   
   <script src="ui.js"></script>
