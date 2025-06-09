@@ -9,6 +9,23 @@ function setupAudio() {
   amplitude = new p5.Amplitude();
   amplitude.setInput(sound); // ⭐ 重要
 
+  const fileInput = document.getElementById('file-input');
+  fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (sound && sound.isPlaying()) {
+        sound.stop();
+      }
+      sound = loadSound(URL.createObjectURL(file), () => {
+        console.log('音声読み込み完了');
+        fileName = file.name;  // ← ここでファイル名を保存
+        document.getElementById('file-name-display').textContent = `🎵 ${fileName}`;
+        sound.play();
+      });
+    }
+  });
+
+
   const button = select('#toggle-btn');
   button.mousePressed(togglePlay);
 }
