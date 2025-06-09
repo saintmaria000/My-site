@@ -1,3 +1,7 @@
+function preload() {
+  sound = loadSound('music/Synonmy.mp3');
+}
+
 // --- 初期化 ---
 function setup() {
   createCanvas(windowWidth, windowHeight); // ← 2D Canvas
