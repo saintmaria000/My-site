@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Galaxy Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="header">
+    <img src="logo.png" alt="Logo" id="logo" />
+  </div>
+
+  <nav id="hamburger-nav">
+    <input type="checkbox" id="menu-toggle" hidden />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+
+    <div id="cover">
+      <h1>🌌 Galaxy Visual</h1>
+      <input type="file" id="file-input" accept="audio/*" />
+      <a href="color.html" style="margin-top: 20px; color: cyan;">Color Spreadへ切替</a>
+    </div>
+  </nav>
+
+  <div id="ui">
+    <button id="toggle-btn">▶ Play / Pause</button>
+  </div>
+
+  <!-- スクリプトの読み込み -->
+  <script src="ui.js"></script>
+  <script src="audio.js"></script>
+  <script src="visual2.js"></script>
+  <script src="sketch_galaxy.js"></script>
+</body>
+</html>
