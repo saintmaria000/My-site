@@ -51,13 +51,19 @@ class Star {
 function drawGalaxyVisual() {
   orbitControl(); // マウス操作でカメラ制御
 
+  // === ライティング ===
+  ambientLight(40); // 柔らかい全体光（必須）
+  pointLight(255, 255, 255, 0, 0, 0); // 中央から白い光を放つ
+  
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
   let size = 9 + rms * 200;
 
   push();
   noStroke();
-  fill(100, 100, 100); // 明るい中心色（黄系）
+  specularMaterial(255);  // 反射材質（ハイライト）
+  shininess(50);          // ハイライト強度
+  //fill(100, 100, 100); // 明るい中心色（黄系）
   sphere(size);
   pop();
 
@@ -68,7 +74,9 @@ function drawGalaxyVisual() {
     let p = stars[i];
     push();
     translate(p.x, p.y, p.z);
-    fill(p.hue, 60, 100); // hueに応じて色分け
+    // 色の発光（fillの代わり）
+    emissiveMaterial(p.hue, 80, 100); // 自ら光る星
+    //fill(p.hue, 60, 100); // hueに応じて色分け
     sphere(2);
     pop();
   }
