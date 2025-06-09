@@ -47,7 +47,7 @@ function drawGalaxyVisual() {
   orbitControl();
 
   // === ライティング ===
-  ambientLight(255);                           // 全体を柔らかく照らす
+  ambientLight(150);                           // 全体を柔らかく照らす
   //pointLight(255, 255, 255, 0, 0, 200);        // 中央から光を照射
 
   // === 中央の鼓動スフィア ===
@@ -72,8 +72,8 @@ function drawGalaxyVisual() {
     colorMode(HSB, 360, 100, 100);
     let col = color(hue, 100, 100);
     colorMode(RGB, 255);
-    //emissiveMaterial(red(col), green(col), blue(col));
-    fill(255, 0, 0);
+    emissiveMaterial(red(col), green(col), blue(col));
+    //fill(255, 0, 0);
     sphere(2);
     pop();
   }
