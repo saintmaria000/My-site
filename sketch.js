@@ -18,7 +18,7 @@ function draw() {
   
   drawColorFillSpread();
   drawWaveform();
-  clearWaveformArea();
+  //clearWaveformArea();
 
   if (sound && sound.isLoaded()) {
     drawWaveform();
