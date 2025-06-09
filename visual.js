@@ -30,7 +30,7 @@ function drawColorFillSpread() {
     let hue = lerpHue(prevHue, currentHue, t);
 
     // 徐々に透明になる alpha
-    let alpha = map(offset, 0, maxOffset, 100, 0);
+    let alpha = 100;//map(offset, 0, maxOffset, 100, 0);
 
     fill(hue % 360, 100, 80, alpha);
     rect(0, baseY - offset, width, 1);
@@ -41,7 +41,7 @@ function drawColorFillSpread() {
   colorSpread += step;
 
   // 拡がりが画面を覆ったら次の色へ
-  if (colorSpread > maxOffset) {
+  if (colorSpread > maxOffset + 1) {
     colorSpread = 0;
     prevHue = currentHue;
     currentHue = nextHue;
