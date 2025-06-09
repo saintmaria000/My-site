@@ -50,8 +50,8 @@ class Star {
  */
 function drawGalaxyVisual() {
   orbitControl(); // マウス操作でカメラ制御
-  ///ambientLight(150); // 柔らかい全体光（必須）
-  ///pointLight(255, 255, 255, 0, 0, 0); // 中央から白い光を放つ
+  ambientLight(150); // 柔らかい全体光（必須）
+  pointLight(255, 255, 255, 0, 0, 200); // 中央から白い光を放つ
   
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
@@ -59,9 +59,9 @@ function drawGalaxyVisual() {
 
   push();
   noStroke();
-  //specularMaterial(255);   // 反射材質（ハイライト）
-  //shininess(50);          // ハイライト強度
-  fill(100, 100, 100); // 明るい中心色（黄系）
+  specularMaterial(255);   // 反射材質（ハイライト）
+  shininess(50);          // ハイライト強度
+  //fill(100, 100, 100); // 明るい中心色（黄系）
   sphere(size);
   pop();
 
