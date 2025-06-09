@@ -14,7 +14,10 @@ function draw() {
   }
 
   fft.analyze();
+  let fft, ampilitude;
+  
   drawColorFillSpread();
+  drawWaveform();
   clearWaveformArea();
 
   if (sound && sound.isLoaded()) {
