@@ -2,47 +2,36 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>Audio Visualizer</title>
+  <title>Color Spread Visualizer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
 </head>
 <body>
-  <!-- ___ロゴ表示セクション___ -->
   <div id="header">
     <img src="logo.png" alt="Logo" id="logo" />
   </div>
 
-  <!-- ___ハンバーガーメニュー（UIとファイル入力）___ -->
   <nav id="hamburger-nav">
     <input type="checkbox" id="menu-toggle" hidden />
     <label for="menu-toggle" class="menu-icon">&#9776;</label>
 
     <div id="cover">
-      <h1>🎵 Audio Visualizer</h1>
+      <h1>🎵 Audio Visualizer - Color Spread</h1>
       <input type="file" id="file-input" accept="audio/*" />
+      <a href="galaxy.html" style="margin-top: 20px; color: cyan;">Galaxy Visualへ切替</a>
     </div>
   </nav>
 
-  <!-- ___再生ボタンUI___ -->
   <div id="ui">
     <button id="toggle-btn">▶ Play / Pause</button>
   </div>
 
-  <!-- ___Visual切替セレクター___ -->
-  <div id="mode-select">
-    <select id="visual-selector">
-      <option value="1">Color Spread</option>
-      <option value="2">Galaxy Visual</option>
-    </select>
-  </div>
-
-  <!-- ___各種スクリプト読み込み（順序重要）___ -->
+  <!-- スクリプトの読み込み -->
   <script src="ui.js"></script>
   <script src="audio.js"></script>
   <script src="visual.js"></script>
-  <script src="visual2.js"></script> <!-- ← 必須：Galaxy Visual -->
-  <script src="sketch.js"></script>
+  <script src="sketch_color.js"></script>
 </body>
 </html>
