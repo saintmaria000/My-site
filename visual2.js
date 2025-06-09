@@ -50,10 +50,6 @@ class Star {
  */
 function drawGalaxyVisual() {
   orbitControl(); // マウス操作でカメラ制御
-
-  // === ライティング ===
-  ambientLight(255); // 柔らかい全体光（必須）
-  pointLight(255, 255, 255, 0, 0, 0); // 中央から白い光を放つ
   
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
