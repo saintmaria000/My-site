@@ -12,7 +12,13 @@ function setup() {
   setupUI();
   setupAudio();
   initGalaxyStars();
-
+  
+  // ファイル名を表示
+  const nameDisplay = document.getElementById("file-name-display");
+  if (nameDisplay) {
+    nameDisplay.textContent = `🎵 ${fileName}`;
+  }
+  
   noFill();
   stroke(255);
   strokeWeight(2);
