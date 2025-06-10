@@ -21,7 +21,7 @@ function initGalaxyStars() {
 
     let x = distance * cos(angle) + randomGaussian() * distance * spread;
     let y = distance * sin(angle) + randomGaussian() * distance * spread;
-    let z = random(-RANGE / 2, RANGE / 2);
+    let z = random(-RANGE / 1.2, RANGE / 1.2);
 
     let hue = map(distance, 50, RANGE, 180, 300);
     stars.push(new Star(x, y, z, hue));
