@@ -2,15 +2,15 @@
 // 【Galaxy Visual】星々が腕に沿って配置され、中心スフィアが鼓動する3D表現
 
 let stars = [];
-let limStars = 600;
-let RANGE = 800;
+let limStars = 900;
+let RANGE = 1300;
 
 /**
  * 銀河風に星を初期化
  */
 function initGalaxyStars() {
   let arms = 7;
-  let spread = 9;
+  let spread = 5;
   stars = [];
 
   for (let i = 0; i < limStars; i++) {
