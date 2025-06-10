@@ -37,7 +37,7 @@ class Star {
     this.y = y;
     this.z = z;
     this.hue = hue;
-    this.size = ramdom(1, 3.0);
+    this.size = random(1, 3.0);
   }
 }
 
