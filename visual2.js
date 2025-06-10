@@ -10,7 +10,7 @@ let RANGE = 800;
  */
 function initGalaxyStars() {
   let arms = 7;
-  let spread = 0.3;
+  let spread = 9;
   stars = [];
 
   for (let i = 0; i < limStars; i++) {
