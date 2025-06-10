@@ -44,10 +44,13 @@ canvas {
 }
 #visual-menu {
   position: absolute;
-  top: 80px;
-  left: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%); /* 中央から少し上へ（-60%で上にずらす） */
   z-index: 10;
   background: rgba(255, 255, 255, 0.05);
+  margin-left: 5px; 
+  margin-right: 5px; 
   padding: 8px;
   border-radius: 8px;
   color: white;
