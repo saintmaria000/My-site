@@ -1,6 +1,6 @@
 // --- グローバル変数 ---
 let currentVisual = 2;
-
+const fileName = "magiceffect";
 function preload() {
   sound = loadSound('music/magiceffect.mp3');
 }
