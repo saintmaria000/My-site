@@ -37,6 +37,7 @@ class Star {
     this.y = y;
     this.z = z;
     this.hue = hue;
+    this.size = ramdom(1, 3.0);
   }
 }
 
@@ -54,7 +55,7 @@ function drawGalaxyVisual() {
 
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
-  let size = 5 + rms * 200;
+  let size = 3 + rms * 150;
 
   push();
   noStroke();
