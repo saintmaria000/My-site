@@ -1,6 +1,7 @@
 function preload() {
   sound = loadSound('music/Synonmy.mp3');
 }
+const fileName = "Synonmy";
 
 // --- 初期化 ---
 function setup() {
