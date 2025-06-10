@@ -31,7 +31,7 @@ function drawColorFillSpread() {
 
   colorSpread += step;
 
-  if (colorSpread > maxOffset + 2) {
+  if (colorSpread > maxOffset + 5) {
     colorSpread = 0;
     prevHue = currentHue;
     currentHue = nextHue;
