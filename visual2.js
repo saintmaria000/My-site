@@ -76,7 +76,7 @@ function drawGalaxyVisual() {
     //let col = HSBtoRGB(p.hue, 100, 100);
     //emissiveMaterial(col.r, col.g, col.b);
     fill(p.hue, 100, 100);
-    sphere(2);
+    sphere(p.size);
     pop();
   }
 }
