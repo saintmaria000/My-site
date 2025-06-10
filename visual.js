@@ -1,7 +1,7 @@
 let colorSpread = 0;
 let prevHue = 0;
-let currentHue = 60;
-let nextHue = 120;
+let currentHue = 30;
+let nextHue = 60;
 let step = 2;
 let maxOffset;
 
