@@ -54,7 +54,7 @@ function drawGalaxyVisual() {
 
   // === 中央の鼓動スフィア ===
   let rms = amplitude.getLevel();
-  let size = 9 + rms * 200;
+  let size = 5 + rms * 200;
 
   push();
   noStroke();
