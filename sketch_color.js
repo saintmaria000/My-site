@@ -8,7 +8,12 @@ function setup() {
   colorMode(HSB, 360, 100, 100, 100);
   setupUI();
   setupAudio();
-
+    // ファイル名を表示
+  const nameDisplay = document.getElementById("file-name-display");
+  if (nameDisplay) {
+    nameDisplay.textContent = `🎵 ${fileName}`;
+  }
+  
   noFill();
   stroke(255);
   strokeWeight(2);
