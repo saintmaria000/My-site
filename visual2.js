@@ -1,9 +1,13 @@
-// === Galaxy Visual ===
-// 星々が腕に沿って広がり、中央スフィアが鼓動。星はフェードイン・アウトで瞬く。
+// === Galaxy Visual + Pulse Effect ===
 
 let stars = [];
 let limStars = 990;
 let RANGE = 1200;
+
+// === パルス用変数 ===
+let pulseAlpha = 0;
+let pulseHue = 0;
+let lastKickTime = 0;
 
 /**
  * 初期化：銀河風に星を配置
@@ -92,6 +96,9 @@ class Star {
 function drawGalaxyVisual() {
   orbitControl();
 
+  detectKick();
+  drawPulseBackground();
+
   // 中央のスフィア
   let rms = amplitude.getLevel();
   let centerSize = 4 + rms * 100;
@@ -102,10 +109,38 @@ function drawGalaxyVisual() {
   sphere(centerSize);
   pop();
 
-  // 星たちを更新・描画
   rotateY(frameCount * 0.002);
   for (let i = 0; i < stars.length; i++) {
     stars[i].update();
     stars[i].draw();
+  }
+}
+
+/**
+ * キック（低音）を検出
+ */
+function detectKick() {
+  let kick = fft.getEnergy(20, 150);  // バスドラムのような帯域
+  let now = millis();
+
+  if (kick > 200 && now - lastKickTime > 180) {
+    lastKickTime = now;
+    pulseAlpha = 60;
+    pulseHue = map(kick, 150, 255, 20, 60); // キック強度で色も変化
+  }
+}
+
+/**
+ * 背景にパルス的な光を放射
+ */
+function drawPulseBackground() {
+  if (pulseAlpha > 0) {
+    push();
+    colorMode(HSB, 360, 100, 100, 100);
+    noStroke();
+    fill(pulseHue, 60, 100, pulseAlpha);
+    rect(-width / 2, -height / 2, width * 2, height * 2);
+    pop();
+    pulseAlpha -= 3.5;
   }
 }
