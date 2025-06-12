@@ -130,3 +130,23 @@ function lerpHue(a, b, t) {
   }
   return (lerp(a, b, t) + 360) % 360;
 }
+// --- 波形描画 ---
+function drawWaveform() {
+  let waveform = fft.waveform();
+  stroke(255);
+  noFill();
+  beginShape();
+  for (let i = 0; i < waveform.length; i++) {
+    let x = map(i, 0, waveform.length, 0, width);
+    let y = map(waveform[i], -1, 1, height * 0.25, height * 0.75);
+    curveVertex(x, y);
+  }
+  endShape();
+}
+
+// --- 波形エリアだけを消す ---
+function clearWaveformArea() {
+  fill(0, 0, 0, 80);
+  noStroke();
+  rect(0, height * 0.25, width, height * 0.5); // ← 波形エリアだけ上書き
+}
