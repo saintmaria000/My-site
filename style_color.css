@@ -45,6 +45,33 @@
   }
 }
 
+#link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.sns-icon {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s ease;
+}
+
+.sns-icon:hover {
+  transform: scale(1.2);
+}
+
+/* 小画面対応 */
+@media screen and (max-width: 600px) {
+  .sns-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
 /* === UI Box === */
 #ui {
   position: absolute;
