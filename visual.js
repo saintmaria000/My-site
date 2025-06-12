@@ -1,7 +1,7 @@
 let colorSpread = 0;
 let maxOffset;
 let step = 2;
-let gradientHeight = 80;
+let gradientHeight = 0;
 
 // パレット管理
 let currentPalette = [];
