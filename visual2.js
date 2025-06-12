@@ -31,13 +31,44 @@ function initGalaxyStars() {
 /**
  * 星クラス
  */
+//class Star {
+  //constructor(x, y, z, hue) {
+    //this.x = x;
+    //this.y = y;
+    //this.z = z;
+    //this.hue = hue;
+    //this.size = random(1, 3.5);
+  //}
+//}
 class Star {
   constructor(x, y, z, hue) {
     this.x = x;
     this.y = y;
     this.z = z;
     this.hue = hue;
-    this.size = random(1, 3.5);
+    this.life = random(60, 240);  // 寿命（フレーム数）
+    this.alpha = 100;             // 初期の明るさ
+    this.fadeSpeed = random(0.3, 1); // 消える速度
+  }
+
+  update() {
+    this.life--;
+    if (this.life < 30) this.alpha -= this.fadeSpeed;
+
+    // 死亡・再生成
+    if (this.alpha <= 0) this.respawn();
+  }
+
+  respawn() {
+    let distance = random(50, RANGE);
+    let angle = random(TWO_PI);
+    this.x = distance * cos(angle) + randomGaussian() * distance * 0.5;
+    this.y = distance * sin(angle) + randomGaussian() * distance * 0.5;
+    this.z = random(-RANGE / 2, RANGE / 2);
+    this.hue = map(distance, 50, RANGE, 180, 300);
+    this.life = random(60, 240);
+    this.alpha = 100;
+    this.fadeSpeed = random(0.3, 1);
   }
 }
 
@@ -70,12 +101,14 @@ function drawGalaxyVisual() {
   noStroke();
   for (let i = 0; i < stars.length; i++) {
     let p = stars[i];
+    p.update();  // 寿命処理
     push();
     translate(p.x, p.y, p.z);
     // HSB → RGB に変換して emissiveMaterial に渡す
     //let col = HSBtoRGB(p.hue, 100, 100);
     //emissiveMaterial(col.r, col.g, col.b);
-    fill(p.hue, 100, 100);
+    colorMode(HSB, 360, 100, 100, 100);
+    fill(p.hue, 80, 100, p.alpha);  // アルファ付きで光らせる
     sphere(p.size);
     pop();
   }
