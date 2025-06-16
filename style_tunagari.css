@@ -1,0 +1,59 @@
+/* === Visual Menu（中央） === */
+#visual-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 64, 0.3);
+  padding: 12px 20px;
+  border-radius: 8px;
+  z-index: 10;
+  backdrop-filter: blur(3px);
+}
+
+#visual-menu button {
+  background: transparent;
+  color: #ddeeff;
+  font-size: 16px;
+  margin: 10px 0;
+  border: none;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+#visual-menu button:hover {
+  color: #55ccff;
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 600px) {
+  #visual-menu {
+    flex-direction: column;
+    padding: 10px 16px;
+  }
+
+  #visual-menu button {
+    font-size: 14px;
+    padding: 5px 12px;
+  }
+}
+
+/* === UI Box（暗色に変更） === */
+#ui {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+}
