@@ -1,6 +1,5 @@
 // --- グローバル変数 ---
 const fileName = "magiceffect";
-let currentVisual = "otonoami"; // 音の網モード
 
 function preload() {
   sound = loadSound('music/magiceffect.mp3'); // 音楽ファイルをここに
@@ -33,10 +32,8 @@ function draw() {
   updateAudio(); // 音の更新（fft.analyzeなど）を audio.js 側で実行
 
   let spectrum = getSpectrum();
-
-  if (currentVisual === 'otonoami') {
-    drawOtonoamiVisual(spectrum);
-  }
+  
+  drawOtonoamiVisual(spectrum);
   // デバッグ情報表示
   if (isPlaying()) {
     const waveform = getWaveform();
