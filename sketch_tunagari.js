@@ -30,6 +30,7 @@ function draw() {
   background(0);
   
   let spectrum = getSpectrum();
+  let bass = getBass();
   drawOtonoamiExplodingVisual(spectrum, bass); 
   
   // デバッグ情報表示
