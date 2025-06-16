@@ -22,7 +22,7 @@ function setup() {
   noFill();
   stroke(255);
   strokeWeight(2);
-
+}
 
 // --- 描画ループ ---
 function draw() {
@@ -56,6 +56,7 @@ function draw() {
     });
   }
 }
+
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
