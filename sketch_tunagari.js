@@ -15,6 +15,7 @@ function setup() {
 
   // ↓ Galaxy不要な場合はコメントアウト
   // initGalaxyStars();
+  initOtonoamiParticles();
 
   // ファイル名を表示
   const nameDisplay = document.getElementById("file-name-display");
