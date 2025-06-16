@@ -3,8 +3,6 @@ const fileName = "magiceffect";
 let currentVisual = "otonoami"; // 音の網モード
 let particles = [];
 let numParticles = 150;
-let fft;
-let sound;
 
 function preload() {
   sound = loadSound('music/magiceffect.mp3'); // 音楽ファイルをここに
