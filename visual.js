@@ -132,7 +132,7 @@ function lerpHue(a, b, t) {
 }
 // --- 波形描画 ---
 function drawWaveform() {
-  let waveform = fft.waveform();
+  let waveform = getWaveform();
   stroke(255);
   noFill();
   beginShape();
