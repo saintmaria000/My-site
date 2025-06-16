@@ -57,8 +57,8 @@ function drawOtonoamiExplodingVisual(spectrum, bass) {
     }
 
     // 十分時間が経ったら状態をリセット
-    if (millis() - explosionTimer > 6000) {
-      exploded = false;
+    //if (millis() - explosionTimer > 6000) {
+     // exploded = false;
     }
   }
 
