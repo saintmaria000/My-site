@@ -11,9 +11,6 @@ function setup() {
   colorMode(HSB, 360, 100, 100, 100);
   setupUI();
   setupAudio();
-
-  // ↓ Galaxy不要な場合はコメントアウト
-  // initGalaxyStars();
   initOtonoamiParticles();
 
   // ファイル名を表示
@@ -30,9 +27,9 @@ function setup() {
 // --- 描画ループ ---
 function draw() {
   updateAudio(); // 音の更新（fft.analyzeなど）を audio.js 側で実行
-
-  let spectrum = getSpectrum();
+  background(0);
   
+  let spectrum = getSpectrum();
   drawOtonoamiExplodingVisual(spectrum, bass); 
   
   // デバッグ情報表示
