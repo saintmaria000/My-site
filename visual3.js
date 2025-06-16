@@ -7,14 +7,17 @@ let explosionTimer = 0;
 // --- 初期化関数（setup時に呼ばれる） ---
 function initOtonoamiParticles() {
   otonoamiParticles = [];
+  let N = numParticles;
 
-  for (let i = 0; i < numParticles; i++) {
-    let theta = random(TWO_PI);
-    let phi = random(PI);
-    let radius = 200;
-    let x = radius * sin(phi) * cos(theta);
-    let y = radius * sin(phi) * sin(theta);
-    let z = radius * cos(phi);
+  for (let i = 0; i < N; i++) {
+    let phi = Math.acos(1 - 2 * (i + 0.5) / N); // θ：縦方向
+    let theta = Math.PI * (1 + Math.sqrt(5)) * i; // φ：横方向（黄金角）
+
+    let r = 200;
+    let x = r * Math.sin(phi) * Math.cos(theta);
+    let y = r * Math.sin(phi) * Math.sin(theta);
+    let z = r * Math.cos(phi);
+
     let pos = createVector(x, y, z);
     otonoamiParticles.push(new Particle(pos));
   }
