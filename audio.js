@@ -32,6 +32,9 @@ function togglePlay() {
 // --- 以下：他ファイルから使える音情報取得関数たち ---
 
 function updateAudio() {
+  if (sound && sound.isPlaying() && fft.input !== sound) {
+  fft.setInput(sound);
+  } 
   fft.analyze();
 }
 
