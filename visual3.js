@@ -67,7 +67,6 @@ function triggerExplosion() {
 // --- メイン描画関数 ---
 function drawOtonoamiExplodingVisual() {
   let bass = getBass();
-  let amplitude = getAmplitude();
   let now = millis();
 
   // 🎯 キックに反応して爆発
@@ -75,40 +74,13 @@ function drawOtonoamiExplodingVisual() {
     triggerExplosion();
   }
 
-  // 💫 パーティクル間引力（距離が近いペア）
-  for (let i = 0; i < otonoamiParticles.length; i++) {
-    let pi = otonoamiParticles[i];
-    for (let j = i + 1; j < otonoamiParticles.length; j++) {
-      let pj = otonoamiParticles[j];
-      let d = p5.Vector.dist(pi.pos, pj.pos);
-      if (d < connectionThreshold) {
-        let f = p5.Vector.sub(pj.pos, pi.pos).normalize().mult(0.02);
-        pi.applyForce(f);
-        pj.applyForce(f.mult(-1));
-      }
-    }
-  }
-
-  // 🌀 音量が小さいほど「強く戻る」
-  if (exploded) {
-    let returnStrength = map(1 - amplitude, 0, 1, 0.001, 0.03);
-    for (let p of otonoamiParticles) {
-      let toBase = p5.Vector.sub(p.basePos, p.pos).mult(returnStrength);
-      p.applyForce(toBase);
-    }
-
-    // 🔄 戻りきったらリセット
-    let allClose = otonoamiParticles.every(p => p.pos.dist(p.basePos) < 5);
-    if (allClose) exploded = false;
-  }
-
-  // 🔧 更新と描画
+  // 🔧 パーティクルの更新と描画
   for (let p of otonoamiParticles) {
     p.update();
     p.display();
   }
 
-  // 🔗 線の描画（近いペア）
+  // 🔗 線の描画（近いペアを視覚的に接続）
   stroke(160, 80);
   for (let i = 0; i < otonoamiParticles.length; i++) {
     for (let j = i + 1; j < otonoamiParticles.length; j++) {
