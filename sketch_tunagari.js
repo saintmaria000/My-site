@@ -1,8 +1,6 @@
 // --- グローバル変数 ---
 let particles = [];
 let numParticles = 150;
-let fft;
-let audio;
 let currentVisual = 'otonoami'; // 音の網
 const fileName = "magiceffect";
 function preload() {
