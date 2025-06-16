@@ -2,11 +2,6 @@
 let infoDiv;
 
 function setupUI() {
-  // 再生トグルボタンの設定（audio.js にある togglePlay を使う）
- // const toggleBtn = select('#toggle-btn');
-  //if (toggleBtn) {
-    //toggleBtn.mousePressed(togglePlay);
-  //}
 
   // デバッグ情報表示用の infoDiv を作成・スタイル設定
   infoDiv = createDiv('');
