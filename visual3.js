@@ -1,91 +1,27 @@
-// --- パーティクル管理用 ---
-let otonoamiParticles = [];
+// --- 可変パラメータ ---
 let numParticles = 150;
-let exploded = false;
-let explosionTimer = 0;
+let connectionThreshold = 80;
 
-// --- 初期化関数（setup時に呼ばれる） ---
+// --- パーティクル配列と状態管理 ---
+let otonoamiParticles = [];
+let exploded = false;
+let lastKickTime = 0;
+const kickInterval = 1000; // ms
+
+// --- 初期化 ---
 function initOtonoamiParticles() {
   otonoamiParticles = [];
-  let N = numParticles;
-
-  for (let i = 0; i < N; i++) {
-    let phi = Math.acos(1 - 2 * (i + 0.5) / N); // θ：縦方向
-    let theta = Math.PI * (1 + Math.sqrt(5)) * i; // φ：横方向（黄金角）
-
+  for (let i = 0; i < numParticles; i++) {
+    let phi = Math.acos(1 - 2 * (i + 0.5) / numParticles);
+    let theta = Math.PI * (1 + Math.sqrt(5)) * i;
     let r = 200;
     let x = r * Math.sin(phi) * Math.cos(theta);
     let y = r * Math.sin(phi) * Math.sin(theta);
     let z = r * Math.cos(phi);
-
     let pos = createVector(x, y, z);
     otonoamiParticles.push(new Particle(pos));
   }
-
   exploded = false;
-  explosionTimer = 0;
-}
-
-// --- パーティクル描画＆物理更新処理 ---
-function drawOtonoamiExplodingVisual(spectrum, bass) {
-
-  orbitControl();      // マウスで3D操作可能に
-  
-  // 低音が一定値を超えたら飛散
-  if (bass > 180 && !exploded) {
-    for (let p of otonoamiParticles) {
-      let force = p5.Vector.random3D().mult(random(3, 6));
-      p.applyForce(force);
-    }
-    exploded = true;
-    explosionTimer = millis();
-  }
-
-  // 引力（近接する粒子同士に吸引力）
-  for (let i = 0; i < otonoamiParticles.length; i++) {
-    let pi = otonoamiParticles[i];
-    for (let j = i + 1; j < otonoamiParticles.length; j++) {
-      let pj = otonoamiParticles[j];
-      let d = p5.Vector.dist(pi.pos, pj.pos);
-      if (d < 60) {
-        let f = p5.Vector.sub(pj.pos, pi.pos).normalize().mult(0.02);
-        pi.applyForce(f);
-        pj.applyForce(f.mult(-1));
-      }
-    }
-  }
-
-  // 球の形に戻る吸引力
-  if (exploded && millis() - explosionTimer > 2500) {
-    for (let p of otonoamiParticles) {
-      let toBase = p5.Vector.sub(p.basePos, p.pos).mult(0.015);
-      p.applyForce(toBase);
-    }
-
-    // 十分時間が経ったら状態をリセット
-    //if (millis() - explosionTimer > 6000) {
-     // exploded = false;
-    }
-  }
-
-  // 更新と描画
-  for (let p of otonoamiParticles) {
-    p.update();
-    p.display();
-  }
-
-  // 線を描画（近いパーティクル同士）
-  stroke(160, 80);
-  for (let i = 0; i < otonoamiParticles.length; i++) {
-    for (let j = i + 1; j < otonoamiParticles.length; j++) {
-      let a = otonoamiParticles[i];
-      let b = otonoamiParticles[j];
-      let d = p5.Vector.dist(a.pos, b.pos);
-      if (d < 60) {
-        line(a.pos.x, a.pos.y, a.pos.z, b.pos.x, b.pos.y, b.pos.z);
-      }
-    }
-  }
 }
 
 // --- パーティクルクラス ---
@@ -115,5 +51,73 @@ class Particle {
     fill(200, 150, 255, 160);
     sphere(3);
     pop();
+  }
+}
+
+// --- 爆発処理 ---
+function triggerExplosion() {
+  for (let p of otonoamiParticles) {
+    let force = p5.Vector.random3D().mult(random(3, 6));
+    p.applyForce(force);
+  }
+  exploded = true;
+  lastKickTime = millis();
+}
+
+// --- メイン描画関数 ---
+function drawOtonoamiExplodingVisual() {
+  let bass = getBass();
+  let amplitude = getAmplitude();
+  let now = millis();
+
+  // 🎯 キックに反応して爆発
+  if (bass > 180 && now - lastKickTime > kickInterval) {
+    triggerExplosion();
+  }
+
+  // 💫 パーティクル間引力（距離が近いペア）
+  for (let i = 0; i < otonoamiParticles.length; i++) {
+    let pi = otonoamiParticles[i];
+    for (let j = i + 1; j < otonoamiParticles.length; j++) {
+      let pj = otonoamiParticles[j];
+      let d = p5.Vector.dist(pi.pos, pj.pos);
+      if (d < connectionThreshold) {
+        let f = p5.Vector.sub(pj.pos, pi.pos).normalize().mult(0.02);
+        pi.applyForce(f);
+        pj.applyForce(f.mult(-1));
+      }
+    }
+  }
+
+  // 🌀 音量が小さいほど「強く戻る」
+  if (exploded) {
+    let returnStrength = map(1 - amplitude, 0, 1, 0.001, 0.03);
+    for (let p of otonoamiParticles) {
+      let toBase = p5.Vector.sub(p.basePos, p.pos).mult(returnStrength);
+      p.applyForce(toBase);
+    }
+
+    // 🔄 戻りきったらリセット
+    let allClose = otonoamiParticles.every(p => p.pos.dist(p.basePos) < 5);
+    if (allClose) exploded = false;
+  }
+
+  // 🔧 更新と描画
+  for (let p of otonoamiParticles) {
+    p.update();
+    p.display();
+  }
+
+  // 🔗 線の描画（近いペア）
+  stroke(160, 80);
+  for (let i = 0; i < otonoamiParticles.length; i++) {
+    for (let j = i + 1; j < otonoamiParticles.length; j++) {
+      let a = otonoamiParticles[i];
+      let b = otonoamiParticles[j];
+      let d = p5.Vector.dist(a.pos, b.pos);
+      if (d < connectionThreshold) {
+        line(a.pos.x, a.pos.y, a.pos.z, b.pos.x, b.pos.y, b.pos.z);
+      }
+    }
   }
 }
