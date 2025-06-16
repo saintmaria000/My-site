@@ -1,5 +1,4 @@
 // --- グローバル変数 ---
-let currentVisual = 'otonoami'; // 音の網
 const fileName = "magiceffect";
 function preload() {
   sound = loadSound('music/magiceffect.mp3'); // 音楽ファイルをここに
