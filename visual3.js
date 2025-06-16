@@ -25,6 +25,9 @@ function initOtonoamiParticles() {
 
 // --- パーティクル描画＆物理更新処理 ---
 function drawOtonoamiExplodingVisual(spectrum, bass) {
+
+  orbitControl();      // マウスで3D操作可能に
+  
   // 低音が一定値を超えたら飛散
   if (bass > 180 && !exploded) {
     for (let p of otonoamiParticles) {
