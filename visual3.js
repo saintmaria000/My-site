@@ -1,5 +1,3 @@
-let particles = [];
-let numParticles = 150;
 
 class Particle {
   constructor(pos) {
