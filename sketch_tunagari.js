@@ -33,7 +33,8 @@ function draw() {
 
   let spectrum = getSpectrum();
   
-  drawOtonoamiVisual(spectrum);
+  drawOtonoamiExplodingVisual(spectrum, bass); 
+  
   // デバッグ情報表示
   if (isPlaying()) {
     const waveform = getWaveform();
