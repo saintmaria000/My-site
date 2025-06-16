@@ -2,6 +2,7 @@
 const fileName = "magiceffect";
 let currentVisual = "otonoami"; // 音の網モード
 let particles = [];
+
 let numParticles = 150;
 
 function preload() {
