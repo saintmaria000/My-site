@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Galaxy Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- HTMLでの使い分け例 -->
+  <link rel="stylesheet" href="style_common.css">
+  <!-- style_color.css -->
+  <link rel="stylesheet" href="style_galaxy.css"> 
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="header">
+    <h1>tunagari</h1>
+  </div>
+  
+  <nav id="hamburger-nav">
+    <input type="checkbox" id="menu-toggle" hidden />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+
+    <div id="cover">
+        <div id="visual-menu">
+          <button onclick="location.href='index.html'">Color Spread</button>
+          <button onclick="location.href='galaxy.html'">Galaxy Visual</button>
+          <button onclick="location.href='tunagari.html'">tunagari</button>
+        </div>
+    </div>
+  </nav>
+
+  <div id="ui">
+    <button id="toggle-btn">▶ Play / Pause</button>
+    <span id="file-name-display">ファイル未設定</span>
+
+  </div>
+
+  <!-- スクリプトの読み込み -->
+  <script src="ui.js"></script>
+  <script src="audio.js"></script>
+  <script src="visual3.js"></script>
+  <script src="sketch_tunagari.js"></script>
+</body>
+</html>
