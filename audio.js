@@ -28,3 +28,37 @@ function togglePlay() {
     }
   });
 }
+
+// --- 以下：他ファイルから使える音情報取得関数たち ---
+
+function updateAudio() {
+  fft.analyze();
+}
+
+function getSpectrum() {
+  return fft.analyze(); // 配列
+}
+
+function getWaveform() {
+  return fft.waveform();
+}
+
+function getBass() {
+  return fft.getEnergy(20, 150);
+}
+
+function getMid() {
+  return fft.getEnergy(150, 4000);
+}
+
+function getHi() {
+  return fft.getEnergy(4000, 12000);
+}
+
+function getAmplitude() {
+  return amplitude.getLevel();
+}
+
+function isPlaying() {
+  return sound && sound.isPlaying();
+}
