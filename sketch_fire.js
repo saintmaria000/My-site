@@ -8,7 +8,7 @@ function preload() {
 
 // --- 初期化 ---
 function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
+  createCanvas(windowWidth, windowHeight);
   colorMode(HSB, 360, 100, 100, 100);
   setupUI();
   setupAudio();
