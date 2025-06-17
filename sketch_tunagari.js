@@ -11,7 +11,7 @@ function setup() {
   colorMode(HSB, 360, 100, 100, 100);
   setupUI();
   setupAudio();
-  initVisual3();
+  initOtonoamiParticles();
 
   // ファイル名を表示
   const nameDisplay = document.getElementById("file-name-display");
