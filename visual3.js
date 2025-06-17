@@ -1,5 +1,5 @@
 // --- パラメータ ---
-let numParticles = 150;
+let numParticles = 250;
 let connectionThreshold = 120;
 let sphereRadius = 200;
 let maxConnections = 3;
@@ -10,6 +10,7 @@ let exploded = false;
 let lastKickTime = 0;
 let kickCooldown = 300;
 let connectionMap = new Set();
+let waveIntensity = 1;
 
 // --- 初期化 ---
 function initOtonoamiParticles() {
@@ -43,10 +44,20 @@ class Particle {
   }
 
   update() {
+    // ノイズによる揺らぎ
+    let t = frameCount * 0.015;
+    let noiseVal = noise(this.id * 0.3, t);
+    let offset = map(noiseVal, 0, 1, -8, 8) * waveIntensity;
+    let dir = this.basePos.copy().normalize().mult(offset);
+    let target = this.basePos.copy().add(dir);
+    let force = p5.Vector.sub(target, this.pos).mult(0.02);
+    this.applyForce(force);
+
+    // 加速度制御
     this.vel.add(this.acc);
     this.pos.add(this.vel);
     this.acc.mult(0);
-    this.vel.mult(0.92);
+    this.vel.mult(0.9);
   }
 
   display() {
@@ -59,7 +70,7 @@ class Particle {
   }
 }
 
-// --- 接続の記録：球体外に出たペアのみ ---
+// --- 接続記録：球体外に出たペアのみ ---
 function registerOuterConnections() {
   connectionMap.clear();
   for (let i = 0; i < otonoamiParticles.length; i++) {
@@ -85,40 +96,27 @@ function shouldConnect(a, b) {
 
 // --- 爆発処理 ---
 function triggerExplosion() {
-  for (let p of otonoamiParticles) {
-    let force = p5.Vector.random3D().mult(random(3, 8));
-    p.applyForce(force);
-  }
-  exploded = true;
+  waveIntensity = 3; // 爆発的な変形へ
   lastKickTime = millis();
-  registerOuterConnections(); // 外側ペアを記録
+  registerOuterConnections();
 }
 
 // --- メイン描画関数 ---
 function drawOtonoamiExplodingVisual() {
   background(0);
-  orbitControl(); // ← カメラ自由操作を追加
+  orbitControl();
 
   let bass = getBass();
   let treble = getHi();
   let now = millis();
 
-  // キック検出 → 爆発
+  // キック検出
   if (bass > 180 && now - lastKickTime > kickCooldown) {
     triggerExplosion();
   }
 
-  // 自然な球状への戻り
-  for (let p of otonoamiParticles) {
-    let toBase = p5.Vector.sub(p.basePos, p.pos).mult(0.01);
-    p.applyForce(toBase);
-  }
-
-  // 戻りきったら爆発状態解除
-  if (exploded) {
-    let allClose = otonoamiParticles.every(p => p.pos.dist(p.basePos) < 5);
-    if (allClose) exploded = false;
-  }
+  // 徐々に波打ち強度を戻す
+  waveIntensity = lerp(waveIntensity, 1, 0.05);
 
   // 更新と描画
   for (let p of otonoamiParticles) {
@@ -126,12 +124,11 @@ function drawOtonoamiExplodingVisual() {
     p.display();
   }
 
-  // 線の描画：高音で可視化（より見えやすく調整）
+  // 高音で接続線を描画
   if (treble > 80) {
     for (let i = 0; i < otonoamiParticles.length; i++) {
       let a = otonoamiParticles[i];
       let connections = [];
-
       for (let j = 0; j < otonoamiParticles.length; j++) {
         if (i === j) continue;
         let b = otonoamiParticles[j];
@@ -146,7 +143,7 @@ function drawOtonoamiExplodingVisual() {
         let n = connections[k];
         let pulse = map(sin(frameCount * 0.1), -1, 1, 0.4, 2.5);
         strokeWeight(map(n.dist, 0, connectionThreshold, 2.5, 0.8) * pulse);
-        stroke(220, 100, 255, map(n.dist, 0, connectionThreshold, 255, 90)); // alpha 最小値↑
+        stroke(220, 100, 255, map(n.dist, 0, connectionThreshold, 255, 90));
         line(a.pos.x, a.pos.y, a.pos.z, n.p.pos.x, n.p.pos.y, n.p.pos.z);
       }
     }
