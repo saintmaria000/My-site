@@ -59,7 +59,7 @@ class Particle {
   }
 }
 
-// --- 接続の記録：球体外に出たペアだけ ---
+// --- 接続の記録：球体外に出たペアのみ ---
 function registerOuterConnections() {
   connectionMap.clear();
   for (let i = 0; i < otonoamiParticles.length; i++) {
@@ -96,26 +96,16 @@ function triggerExplosion() {
 
 // --- メイン描画関数 ---
 function drawOtonoamiExplodingVisual() {
+  background(0);
+  orbitControl(); // ← カメラ自由操作を追加
+
   let bass = getBass();
-  let mid = getMid();
   let treble = getHi();
-  let amp = getAmplitude();
   let now = millis();
 
+  // キック検出 → 爆発
   if (bass > 180 && now - lastKickTime > kickCooldown) {
     triggerExplosion();
-  }
-
-  // 中音で波打ち
-  if (!exploded && mid > 130) {
-    for (let p of otonoamiParticles) {
-      let n = noise(p.id * 0.2, frameCount * 0.02);
-      let offset = map(n, 0, 1, -12, 12) * amp * 6;
-      let dir = p.basePos.copy().normalize().mult(offset);
-      let target = p.basePos.copy().add(dir);
-      let force = p5.Vector.sub(target, p.pos).mult(0.015);
-      p.applyForce(force);
-    }
   }
 
   // 自然な球状への戻り
@@ -124,6 +114,7 @@ function drawOtonoamiExplodingVisual() {
     p.applyForce(toBase);
   }
 
+  // 戻りきったら爆発状態解除
   if (exploded) {
     let allClose = otonoamiParticles.every(p => p.pos.dist(p.basePos) < 5);
     if (allClose) exploded = false;
@@ -135,8 +126,8 @@ function drawOtonoamiExplodingVisual() {
     p.display();
   }
 
-  // 線の描画：高音でのみ可視化
-  if (treble > 100) {
+  // 線の描画：高音で可視化（より見えやすく調整）
+  if (treble > 80) {
     for (let i = 0; i < otonoamiParticles.length; i++) {
       let a = otonoamiParticles[i];
       let connections = [];
@@ -153,9 +144,9 @@ function drawOtonoamiExplodingVisual() {
       connections.sort((a, b) => a.dist - b.dist);
       for (let k = 0; k < Math.min(maxConnections, connections.length); k++) {
         let n = connections[k];
-        let pulse = map(sin(frameCount * 0.1), -1, 1, 0.3, 2);
-        strokeWeight(map(n.dist, 0, connectionThreshold, 2, 0.5) * pulse);
-        stroke(220, 100, 255, map(n.dist, 0, connectionThreshold, 255, 60));
+        let pulse = map(sin(frameCount * 0.1), -1, 1, 0.4, 2.5);
+        strokeWeight(map(n.dist, 0, connectionThreshold, 2.5, 0.8) * pulse);
+        stroke(220, 100, 255, map(n.dist, 0, connectionThreshold, 255, 90)); // alpha 最小値↑
         line(a.pos.x, a.pos.y, a.pos.z, n.p.pos.x, n.p.pos.y, n.p.pos.z);
       }
     }
