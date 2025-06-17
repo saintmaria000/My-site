@@ -11,7 +11,7 @@ function setup() {
   colorMode(HSB, 360, 100, 100, 100);
   setupUI();
   setupAudio();
-  initOtonoamiParticles();
+  initVisual3();
 
   // ファイル名を表示
   const nameDisplay = document.getElementById("file-name-display");
@@ -31,7 +31,7 @@ function draw() {
   
   let spectrum = getSpectrum();
   let bass = getBass();
-  drawOtonoamiExplodingVisual(spectrum, bass); 
+  drawVisual3(); 
   
   // デバッグ情報表示
   if (isPlaying()) {
