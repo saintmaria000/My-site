@@ -1,7 +1,6 @@
 let particles = [];
 let numParticles = 1000;
 let radius = 250;
-
 let lasers = [];
 let lastLaserTime = 0;
 let laserCooldown = 300;
