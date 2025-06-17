@@ -51,7 +51,7 @@ function drawVisual3() {
   }
 
   // === 魂出現（高音反応） ===
-  if (treble > 135) {
+  if (treble > 110) {
     // 軌道魂
     for (let i = 0; i < floor(random(2, 4)); i++) {
       orbs.push({
