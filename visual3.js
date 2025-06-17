@@ -1,4 +1,4 @@
-// --- パラメータ ---
+// --- パラメータ ---!
 let numParticles = 250;
 let connectionThreshold = 120;
 let sphereRadius = 200;
