@@ -31,7 +31,7 @@ function draw() {
   
   let spectrum = getSpectrum();
   let bass = getBass();
-  drawVisual3(); 
+  drawOtonoamiExplodingVisual(); 
   
   // デバッグ情報表示
   if (isPlaying()) {
