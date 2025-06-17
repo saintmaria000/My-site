@@ -2,12 +2,9 @@ let particles = [];
 let numParticles = 800;
 let radius = 250;
 
-let spikeSources = [];
-let spikeDuration = 300;
-let lastSpikeTime = 0;
-
 let lasers = [];
-let laserDuration = 1200; // 1.2秒
+let lastLaserTime = 0;
+let laserCooldown = 300;
 let spectrum = [];
 
 function initVisual3() {
@@ -33,27 +30,28 @@ function drawVisual3() {
   spectrum = fft.analyze();
   let now = millis();
 
-  // === キック検出 → レーザー発射 ===
-  if (bass > 180 && now - lastSpikeTime > spikeDuration) {
-    lastSpikeTime = now;
+  // === レーザー発射（Kick反応）===
+  if (bass > 180 && now - lastLaserTime > laserCooldown) {
+    lastLaserTime = now;
     let dir = p5.Vector.random3D();
     lasers.push({
       start: createVector(0, 0, 0),
       dir: dir,
-      startTime: now
+      startTime: now,
+      duration: random(1200, 2000)  // ★ ランダム持続時間（1.2〜2秒）
     });
   }
 
   // === レーザー描画 ===
   for (let l of lasers) {
     let elapsed = now - l.startTime;
-    if (elapsed > laserDuration) continue;
+    if (elapsed > l.duration) continue;
 
-    let progress = elapsed / laserDuration;
+    let progress = elapsed / l.duration;
     let beamWidth = 8 * (1 - abs(sin(progress * PI)));
     let alpha = map(1 - progress, 0, 1, 0, 100);
-
     let endPos = p5.Vector.add(l.start, p5.Vector.mult(l.dir, 2000));
+
     push();
     strokeWeight(beamWidth);
     colorMode(HSB, 360, 100, 100, 100);
@@ -66,10 +64,10 @@ function drawVisual3() {
   for (let p of particles) {
     let displacement = createVector();
 
-    // --- レーザー回避
+    // レーザー通過時だけ穴（避ける）を作る
     for (let l of lasers) {
       let elapsed = now - l.startTime;
-      if (elapsed > laserDuration) continue;
+      if (elapsed > l.duration) continue;
 
       let beamDir = l.dir;
       let projLength = p.basePos.dot(beamDir);
@@ -77,24 +75,23 @@ function drawVisual3() {
       let distToBeam = p.basePos.dist(closestPoint);
 
       if (distToBeam < 80) {
-        let repel = p.basePos.copy().sub(closestPoint).normalize().mult(80 * (1 - elapsed / laserDuration));
+        let repel = p.basePos.copy().sub(closestPoint).normalize().mult(80 * (1 - elapsed / l.duration));
         displacement.add(repel);
       }
     }
 
-    // --- スペクトラムうねり（連続性のある波）
+    // 波打ち（スペクトラム反映、穴にならないように調整）
     let phiIndex = floor(map(p.phi, 0, PI, 0, spectrum.length));
-    let amp = map(spectrum[phiIndex], 0, 255, 0, 1.5);  // 強調気味
-    let wave = sin(p.phi * 4 + frameCount * 0.08);      // 波長 × φ
+    let amp = map(spectrum[phiIndex], 0, 255, 0, 1.5);
+    let wave = sin(p.phi * 4 + frameCount * 0.08);
     let normal = p.basePos.copy().normalize();
-    displacement.add(normal.mult(wave * amp * 23));     // スペクトラム波の強さ
+    displacement.add(normal.mult(wave * amp * 23));
 
-    // --- 緩やかに戻る
     let target = p.basePos.copy().add(displacement);
     p.pos.lerp(target, 0.24);
   }
 
-  // === 明滅する中音線描画 ===
+  // === 線描画（中音に反応したビリビリ明滅） ===
   for (let i = 0; i < particles.length; i++) {
     let a = particles[i];
     for (let j = i + 1; j < particles.length; j++) {
@@ -120,5 +117,5 @@ function drawVisual3() {
   }
 
   // === 古いレーザー除去 ===
-  lasers = lasers.filter(l => now - l.startTime < laserDuration);
+  lasers = lasers.filter(l => now - l.startTime < l.duration);
 }
