@@ -1,18 +1,18 @@
-// --- パラメータ ---!
+// === パラメータ設定 ===!!
 let numParticles = 250;
 let connectionThreshold = 120;
 let sphereRadius = 200;
 let maxConnections = 3;
+let explosionDistance = 800;
 
-// --- 状態変数 ---
+// === 状態変数 ===
 let otonoamiParticles = [];
 let exploded = false;
 let lastKickTime = 0;
 let kickCooldown = 300;
 let connectionMap = new Set();
-let waveIntensity = 1;
 
-// --- 初期化 ---
+// === 初期化処理 ===
 function initOtonoamiParticles() {
   otonoamiParticles = [];
   for (let i = 0; i < numParticles; i++) {
@@ -29,7 +29,7 @@ function initOtonoamiParticles() {
   connectionMap.clear();
 }
 
-// --- パーティクルクラス ---
+// === パーティクルクラス ===
 class Particle {
   constructor(pos, id) {
     this.id = id;
@@ -44,20 +44,10 @@ class Particle {
   }
 
   update() {
-    // ノイズによる揺らぎ
-    let t = frameCount * 0.015;
-    let noiseVal = noise(this.id * 0.3, t);
-    let offset = map(noiseVal, 0, 1, -8, 8) * waveIntensity;
-    let dir = this.basePos.copy().normalize().mult(offset);
-    let target = this.basePos.copy().add(dir);
-    let force = p5.Vector.sub(target, this.pos).mult(0.02);
-    this.applyForce(force);
-
-    // 加速度制御
     this.vel.add(this.acc);
     this.pos.add(this.vel);
     this.acc.mult(0);
-    this.vel.mult(0.9);
+    this.vel.mult(0.92);
   }
 
   display() {
@@ -70,7 +60,30 @@ class Particle {
   }
 }
 
-// --- 接続記録：球体外に出たペアのみ ---
+// === 爆発処理（キック反応） ===
+function triggerExplosion() {
+  let sources = [];
+  while (sources.length < 5) {
+    let candidate = floor(random(otonoamiParticles.length));
+    if (!sources.includes(candidate)) sources.push(candidate);
+  }
+
+  for (let p of otonoamiParticles) {
+    let force = createVector();
+    for (let sid of sources) {
+      let dir = p5.Vector.sub(p.pos, otonoamiParticles[sid].pos).normalize();
+      force.add(dir);
+    }
+    force.normalize().mult(random(10, 25));
+    p.applyForce(force);
+  }
+
+  exploded = true;
+  lastKickTime = millis();
+  registerOuterConnections();
+}
+
+// === 外殻接続記録 ===
 function registerOuterConnections() {
   connectionMap.clear();
   for (let i = 0; i < otonoamiParticles.length; i++) {
@@ -79,35 +92,26 @@ function registerOuterConnections() {
     for (let j = i + 1; j < otonoamiParticles.length; j++) {
       let b = otonoamiParticles[j];
       if (b.pos.mag() <= sphereRadius) continue;
-
-      let d = p5.Vector.dist(a.pos, b.pos);
-      if (d < connectionThreshold) {
-        let key = [a.id, b.id].sort().join("-");
-        connectionMap.add(key);
+      if (p5.Vector.dist(a.pos, b.pos) < connectionThreshold) {
+        connectionMap.add([a.id, b.id].sort().join("-"));
       }
     }
   }
 }
 
 function shouldConnect(a, b) {
-  let key = [a.id, b.id].sort().join("-");
-  return connectionMap.has(key);
+  return connectionMap.has([a.id, b.id].sort().join("-"));
 }
 
-// --- 爆発処理 ---
-function triggerExplosion() {
-  waveIntensity = 3; // 爆発的な変形へ
-  lastKickTime = millis();
-  registerOuterConnections();
-}
-
-// --- メイン描画関数 ---
+// === メイン描画関数 ===
 function drawOtonoamiExplodingVisual() {
   background(0);
   orbitControl();
 
   let bass = getBass();
+  let mid = getMid();
   let treble = getHi();
+  let amp = getAmplitude();
   let now = millis();
 
   // キック検出
@@ -115,8 +119,25 @@ function drawOtonoamiExplodingVisual() {
     triggerExplosion();
   }
 
-  // 徐々に波打ち強度を戻す
-  waveIntensity = lerp(waveIntensity, 1, 0.05);
+  // 波打ち表現：中音 + 高音で
+  for (let p of otonoamiParticles) {
+    let factor = map(mid + treble, 0, 300, 0, 1);
+    let offset = sin(p.id * 0.3 + frameCount * 0.08) * factor * 15;
+    let normal = p.basePos.copy().normalize();
+    let target = p.basePos.copy().add(normal.mult(offset));
+    let restoring = p5.Vector.sub(target, p.pos).mult(0.05);
+    p.applyForce(restoring);
+
+    // 球へ戻す力
+    let back = p5.Vector.sub(p.basePos, p.pos).mult(0.01);
+    p.applyForce(back);
+  }
+
+  // 爆発 → 全員戻ったら解除
+  if (exploded) {
+    let allClose = otonoamiParticles.every(p => p.pos.dist(p.basePos) < 5);
+    if (allClose) exploded = false;
+  }
 
   // 更新と描画
   for (let p of otonoamiParticles) {
@@ -124,25 +145,24 @@ function drawOtonoamiExplodingVisual() {
     p.display();
   }
 
-  // 高音で接続線を描画
+  // 高音で線描画
   if (treble > 80) {
     for (let i = 0; i < otonoamiParticles.length; i++) {
       let a = otonoamiParticles[i];
-      let connections = [];
+      let conns = [];
       for (let j = 0; j < otonoamiParticles.length; j++) {
         if (i === j) continue;
         let b = otonoamiParticles[j];
         if (shouldConnect(a, b)) {
           let d = p5.Vector.dist(a.pos, b.pos);
-          connections.push({ p: b, dist: d });
+          conns.push({ p: b, dist: d });
         }
       }
 
-      connections.sort((a, b) => a.dist - b.dist);
-      for (let k = 0; k < Math.min(maxConnections, connections.length); k++) {
-        let n = connections[k];
-        let pulse = map(sin(frameCount * 0.1), -1, 1, 0.4, 2.5);
-        strokeWeight(map(n.dist, 0, connectionThreshold, 2.5, 0.8) * pulse);
+      conns.sort((a, b) => a.dist - b.dist);
+      for (let k = 0; k < Math.min(maxConnections, conns.length); k++) {
+        let n = conns[k];
+        strokeWeight(map(n.dist, 0, connectionThreshold, 2.5, 0.8));
         stroke(220, 100, 255, map(n.dist, 0, connectionThreshold, 255, 90));
         line(a.pos.x, a.pos.y, a.pos.z, n.p.pos.x, n.p.pos.y, n.p.pos.z);
       }
