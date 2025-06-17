@@ -1,13 +1,14 @@
+//2
 let particles = [];
 let numParticles = 1000;
 let radius = 250;
 
 let lasers = [];
-let laserMin = 1200;
-let laserMax = 2000;
-
+let lastLaserTime = 0;
+let laserCooldown = 300;
 let spectrum = [];
-let souls = [];
+
+let souls = []; // 魂オブジェクト（高音反応）
 
 function initVisual3() {
   particles = [];
@@ -27,101 +28,101 @@ function initVisual3() {
 function drawVisual3() {
   background(0);
   orbitControl();
-  let now = millis();
 
-  // === 音取得 ===
   let bass = fft.getEnergy(20, 60);
   let mid = fft.getEnergy(300, 2500);
-  let treble = fft.getEnergy(7000, 12000);
+  let treble = fft.getEnergy(8000, 12000);
   spectrum = fft.analyze();
+  let now = millis();
 
-  // === レーザー発射 ===
-  if (bass > 180) {
+  // === Kickでレーザー発射 ===
+  if (bass > 180 && now - lastLaserTime > laserCooldown) {
+    lastLaserTime = now;
     let dir = p5.Vector.random3D();
     lasers.push({
       start: createVector(0, 0, 0),
-      dir,
+      dir: dir,
       startTime: now,
-      duration: random(laserMin, laserMax)
+      duration: random(1200, 2000)
     });
   }
 
-  // === 魂の生成 ===
-  if (treble > 160 && souls.length < 5) {
+  // === 高音で魂を追加 ===
+  if (treble > 180 && random() < 0.05) {
     souls.push({
-      theta: random(TWO_PI),
-      phi: random(PI),
-      speed: random(0.01, 0.03),
-      offset: random(TWO_PI),
-      birth: now
+      angle: random(TWO_PI),
+      axis: p5.Vector.random3D(),
+      startTime: now,
+      duration: 2500
     });
   }
 
-  // === 魂描画 ===
-  for (let i = souls.length - 1; i >= 0; i--) {
-    let s = souls[i];
-    let life = now - s.birth;
-    if (life > 3000) {
-      souls.splice(i, 1);
-      continue;
-    }
+  // === レーザー描画 ===
+  for (let l of lasers) {
+    let elapsed = now - l.startTime;
+    if (elapsed > l.duration) continue;
 
-    // ランダムな変化を加えた周回軌道
-    s.theta += s.speed;
-    let phi = s.phi + sin(frameCount * 0.05 + s.offset) * 0.1;
-    let x = (radius + 10) * sin(phi) * cos(s.theta);
-    let y = (radius + 10) * sin(phi) * sin(s.theta);
-    let z = (radius + 10) * cos(phi);
+    let progress = elapsed / l.duration;
+    let beamWidth = 8 * (1 - abs(sin(progress * PI)));
+    let alpha = map(1 - progress, 0, 1, 0, 100);
+    let endPos = p5.Vector.add(l.start, p5.Vector.mult(l.dir, 2000));
+
     push();
+    strokeWeight(beamWidth);
+    colorMode(HSB, 360, 100, 100, 100);
+    stroke(200, 100, 100, alpha);
+    line(l.start.x, l.start.y, l.start.z, endPos.x, endPos.y, endPos.z);
+    pop();
+  }
+
+  // === 魂の描画 ===
+  for (let s of souls) {
+    let t = (now - s.startTime) / s.duration;
+    if (t > 1) continue;
+
+    let theta = s.angle + t * TWO_PI * 2;
+    let axis = s.axis;
+    let angleOffset = sin(frameCount * 0.05 + s.angle * 5) * 0.4;
+    let pos = p5.Vector.fromAngle(theta + angleOffset).mult(radius * 1.1).rotate(axis);
+
+    push();
+    colorMode(HSB, 360, 100, 100, 100);
+    fill(50, 0, 100, 80 * (1 - t));
     noStroke();
-    fill(180, 255, 255, map(3000 - life, 0, 3000, 0, 255));
-    translate(x, y, z);
+    translate(pos.x, pos.y, pos.z);
     sphere(4);
     pop();
   }
 
-  // === レーザー描画と影響 ===
-  for (let l of lasers) {
-    let elapsed = now - l.startTime;
-    if (elapsed > l.duration) continue;
-    let alpha = map(1 - elapsed / l.duration, 0, 1, 0, 100);
-    let beamWidth = 8 * (1 - abs(sin(elapsed / l.duration * PI)));
-    let endPos = p5.Vector.add(l.start, p5.Vector.mult(l.dir, 2000));
-    strokeWeight(beamWidth);
-    stroke(200, 100, 100, alpha);
-    line(l.start.x, l.start.y, l.start.z, endPos.x, endPos.y, endPos.z);
-  }
-
-  // === パーティクル更新 ===
+  // === パーティクル位置更新 ===
   for (let p of particles) {
     let displacement = createVector();
 
-    // レーザー回避のみ（穴）
+    // レーザー通過時の穴
     for (let l of lasers) {
       let elapsed = now - l.startTime;
       if (elapsed > l.duration) continue;
-      let proj = p.basePos.dot(l.dir);
-      let closest = p5.Vector.mult(l.dir, proj);
-      let d = p.basePos.dist(closest);
-      if (d < 80) {
-        let repel = p.basePos.copy().sub(closest).normalize().mult(80 * (1 - elapsed / l.duration));
+      let beamDir = l.dir;
+      let projLength = p.basePos.dot(beamDir);
+      let closestPoint = p5.Vector.mult(beamDir, projLength);
+      let distToBeam = p.basePos.dist(closestPoint);
+      if (distToBeam < 80) {
+        let repel = p.basePos.copy().sub(closestPoint).normalize().mult(80 * (1 - elapsed / l.duration));
         displacement.add(repel);
       }
     }
 
-    // 波打ち（スペクトラム）
-    let index = floor(map(p.phi, 0, PI, 0, spectrum.length));
-    let amp = map(spectrum[index], 0, 255, 0, 1.5);
+    // φベースのスペクトラム波
+    let phiIndex = floor(map(p.phi, 0, PI, 0, spectrum.length));
+    let amp = map(spectrum[phiIndex], 0, 255, 0, 1.5);
     let wave = sin(p.phi * 4 + frameCount * 0.08);
     let normal = p.basePos.copy().normalize();
     displacement.add(normal.mult(wave * amp * 23));
 
-    // 元位置への戻り
-    let target = p.basePos.copy().add(displacement);
-    p.pos.lerp(target, 0.24);
+    p.pos.lerp(p.basePos.copy().add(displacement), 0.24);
   }
 
-  // === メッシュ描画（中音反応） ===
+  // === 中音で明滅する線 ===
   for (let i = 0; i < particles.length; i++) {
     let a = particles[i];
     for (let j = i + 1; j < particles.length; j++) {
@@ -146,6 +147,7 @@ function drawVisual3() {
     pop();
   }
 
-  // === 古いレーザー除去 ===
+  // === オブジェクト寿命管理 ===
   lasers = lasers.filter(l => now - l.startTime < l.duration);
+  souls = souls.filter(s => now - s.startTime < s.duration);
 }
