@@ -6,7 +6,7 @@ let limStars = 990;      // 星の数
 let RANGE = 1200;        // 銀河の広がり範囲
 
 // === 星の初期化（銀河腕構造に沿って配置） ===
-function initGalaxyStars() {
+function initvisual2() {
   let arms = 7;          // 銀河の腕の数
   let spread = 4;        // 星のばらつき（ノイズ）
   stars = [];
@@ -85,7 +85,7 @@ class Star {
 }
 
 // === 描画関数：Galaxy Visual ===
-function drawGalaxyVisual() {
+function drawvisual2() {
   orbitControl();      // マウスで3D操作可能に
 
   detectKick();        // キック音検出
