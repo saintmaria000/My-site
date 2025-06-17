@@ -38,8 +38,10 @@ function drawVisual3() {
 
   // === キック検出でレーザー追加 ===
   if (bass > 180 && now - lastSpikeTime > spikeDuration) {
+    
     spikeSources = [];
     let numLaser = floor(random(1, 3));
+    
     for (let i = 0; i < numLaser; i++) {
       spikeSources.push(floor(random(particles.length)));
     }
