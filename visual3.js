@@ -1,4 +1,4 @@
-// === パラメータ ===2
+// === パラメータ ===3
 const numParticles = 800;
 const sphereRadius = 200;
 const maxConnections = 4;
