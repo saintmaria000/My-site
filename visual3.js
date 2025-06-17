@@ -1,5 +1,5 @@
 let particles = [];
-let numParticles = 800;
+let numParticles = 1000;
 let radius = 250;
 
 let lasers = [];
