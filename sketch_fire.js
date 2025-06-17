@@ -28,7 +28,7 @@ function setup() {
 // --- 描画ループ ---
 function draw() {
   updateAudio(); // 音の更新（fft.analyzeなど）を audio.js 側で実行
-  background(0);
+  //background(0);
   
   let spectrum = getSpectrum();
   let bass = getBass();
