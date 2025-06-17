@@ -19,7 +19,7 @@ function initVisual3() {
     let y = radius * Math.sin(phi) * Math.sin(theta);
     let z = radius * Math.cos(phi);
     let basePos = createVector(x, y, z);
-    particles.push({ basePos, pos: basePos.copy(), id: i });
+    particles.push({ basePos, pos: basePos.copy(), id: i, phi });
   }
   lasers = [];
 }
@@ -66,7 +66,7 @@ function drawVisual3() {
   for (let p of particles) {
     let displacement = createVector();
 
-    // レーザー回避：レーザーの進行方向に近いものを押しのける
+    // --- レーザー回避
     for (let l of lasers) {
       let elapsed = now - l.startTime;
       if (elapsed > laserDuration) continue;
@@ -82,15 +82,16 @@ function drawVisual3() {
       }
     }
 
-    // スペクトラムに合わせた波打ち（全体的な呼吸）
-    let index = floor(map(p.id, 0, numParticles, 0, spectrum.length));
-    let amp = map(spectrum[index], 0, 255, 0, 1);
+    // --- スペクトラムうねり（連続性のある波）
+    let phiIndex = floor(map(p.phi, 0, PI, 0, spectrum.length));
+    let amp = map(spectrum[phiIndex], 0, 255, 0, 1.5);  // 強調気味
+    let wave = sin(p.phi * 4 + frameCount * 0.08);      // 波長 × φ
     let normal = p.basePos.copy().normalize();
-    displacement.add(normal.mult(amp * 24));
+    displacement.add(normal.mult(wave * amp * 23));     // スペクトラム波の強さ
 
-    // 緩やかに戻る
+    // --- 緩やかに戻る
     let target = p.basePos.copy().add(displacement);
-    p.pos.lerp(target, 0.22);
+    p.pos.lerp(target, 0.24);
   }
 
   // === 明滅する中音線描画 ===
