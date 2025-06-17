@@ -35,8 +35,10 @@ function drawVisual3() {
   spectrum = fft.analyze();
   let now = millis();
 
-  // === Kickでレーザー発射 ===
-  if (bass > 180 && now - lastLaserTime > laserCooldown) {
+// === Kickでレーザー発射 ===
+  let anyLaserActive = lasers.some(l => now - l.startTime < l.duration);
+
+  if (bass > 180 && !anyLaserActive) {
     lastLaserTime = now;
     let dir = p5.Vector.random3D();
     lasers.push({
@@ -46,7 +48,6 @@ function drawVisual3() {
       duration: random(1200, 2000)
     });
   }
-
   // === 高音で魂を追加 ===
   if (treble > 180 && random() < 0.05) {
     souls.push({
