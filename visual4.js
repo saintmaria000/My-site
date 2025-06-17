@@ -19,6 +19,7 @@ function initVisual4() {
 }
 
 function drawVisual4() {
+  
   push();
   translate(width / 2, height);  // 中央下端起点に変換
   noStroke();
@@ -26,6 +27,7 @@ function drawVisual4() {
 
   // 残像付きの背景処理
   fill(0, 0, 0, 10);
+  background(0, 0, 0, 50);
   rect(-width / 2, -height, width, height * 2);
 
   let level = amplitude.getLevel();
