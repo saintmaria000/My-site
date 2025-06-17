@@ -11,6 +11,7 @@ let meshConnections = [];
 let lastKickTime = 0;
 let kickCooldown = 300;
 
+
 // === 初期化 ===
 function initVisual3() {
   particles = [];
