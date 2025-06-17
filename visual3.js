@@ -40,7 +40,7 @@ function drawVisual3() {
   // === レーザー発射 ===
   if (bass > 180 && now - lastLaserTime > laserCooldown) {
     lastLaserTime = now;
-    let numLasers = floor(random(1, 3));
+    let numLasers = floor(random(1, 4));
     for (let i = 0; i < numLasers; i++) {
       lasers.push({
         start: createVector(0, 0, 0),
@@ -52,7 +52,7 @@ function drawVisual3() {
   }
 
   // === 魂出現（高音反応） ===
-  if (treble > 120) {
+  if (treble > 108) {
     // 軌道魂
     for (let i = 0; i < floor(random(1, 3)); i++) {
       orbs.push({
