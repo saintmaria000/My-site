@@ -1,4 +1,4 @@
-// === パラメータ ===2
+// === パラメータ ===
 const numParticles = 800;
 const sphereRadius = 200;
 const maxConnections = 4;
@@ -10,7 +10,6 @@ let particles = [];
 let meshConnections = [];
 let lastKickTime = 0;
 let kickCooldown = 300;
-
 
 // === 初期化 ===
 function initVisual3() {
@@ -115,6 +114,10 @@ function drawVisual3() {
 
   // update + draw particles
   for (let p of particles) {
+    // 戻る力を適用
+    let restoringForce = p5.Vector.sub(p.basePos, p.pos).mult(0.01);
+    p.applyForce(restoringForce);
+
     p.update();
     p.display();
   }
