@@ -1,36 +1,39 @@
-let sphereParticles = [];
-let particleCount = 800;
-let sphereRadius = 200;
-let connectionThreshold = 100;
-let maxConnections = 3;
-let spectrumBands = 64;
-let connections = new Set();
-let activeBursts = [];
+// === パラメータ ===
+const numParticles = 800;
+const sphereRadius = 200;
+const maxConnections = 4;
+const connectionThreshold = 100;
+const explosionForce = 25;
+const meshDuration = 4; // フレーム数
 
-function initOtonoamiParticles() {
-  sphereParticles = [];
-  for (let i = 0; i < particleCount; i++) {
-    let phi = Math.acos(1 - 2 * (i + 0.5) / particleCount);
+let particles = [];
+let meshConnections = [];
+let lastKickTime = 0;
+let kickCooldown = 300;
+
+// === 初期化 ===
+function initVisual3() {
+  particles = [];
+  for (let i = 0; i < numParticles; i++) {
+    let phi = Math.acos(1 - 2 * (i + 0.5) / numParticles);
     let theta = Math.PI * (1 + Math.sqrt(5)) * i;
-    let r = sphereRadius;
-    let x = r * Math.sin(phi) * Math.cos(theta);
-    let y = r * Math.sin(phi) * Math.sin(theta);
-    let z = r * Math.cos(phi);
+    let x = sphereRadius * Math.sin(phi) * Math.cos(theta);
+    let y = sphereRadius * Math.sin(phi) * Math.sin(theta);
+    let z = sphereRadius * Math.cos(phi);
     let pos = createVector(x, y, z);
-    sphereParticles.push(new Particle(pos, i));
+    particles.push(new Particle3(pos, i));
   }
-  connections.clear();
-  activeBursts = [];
+  meshConnections = [];
 }
 
-class Particle {
+// === パーティクルクラス ===
+class Particle3 {
   constructor(pos, id) {
     this.id = id;
     this.basePos = pos.copy();
     this.pos = pos.copy();
     this.vel = createVector();
     this.acc = createVector();
-    this.ampFactor = 0;
   }
 
   applyForce(force) {
@@ -40,90 +43,90 @@ class Particle {
   update() {
     this.vel.add(this.acc);
     this.pos.add(this.vel);
-    this.acc.mult(0);
     this.vel.mult(0.9);
+    this.acc.mult(0);
   }
 
   display() {
     push();
     translate(this.pos.x, this.pos.y, this.pos.z);
     noStroke();
-    fill(180, 130, 255, 180);
-    sphere(2.2);
+    fill(220, 150, 255, 160);
+    sphere(2);
     pop();
   }
 }
 
-function drawOtonoamiExplodingVisual() {
-  background(0);
-  orbitControl();
+// === キックによる爆発 ===
+function triggerKickExplosion() {
+  const seeds = [];
+  while (seeds.length < 5) {
+    let i = floor(random(particles.length));
+    if (!seeds.includes(i)) seeds.push(i);
+  }
 
-  let spectrum = fft.analyze();
-  let bass = fft.getEnergy(20, 60);
-  let treble = fft.getEnergy(8000, 12000);
-  let now = millis();
-
-  // 面のうねり（スペクトラムから直接）
-  for (let i = 0; i < sphereParticles.length; i++) {
-    let p = sphereParticles[i];
-    let bandIdx = floor(map(i, 0, particleCount, 0, spectrumBands));
-    let amp = spectrum[bandIdx] || 0;
-    let offset = map(amp, 0, 255, 0, 30);
-    let dir = p.basePos.copy().normalize().mult(offset);
-    let target = p.basePos.copy().add(dir);
-    let force = p5.Vector.sub(target, p.pos).mult(0.12);
+  for (let i = 0; i < particles.length; i++) {
+    let p = particles[i];
+    let force = createVector();
+    for (let sid of seeds) {
+      let dir = p5.Vector.sub(p.pos, particles[sid].pos);
+      force.add(dir.normalize());
+    }
+    force.div(seeds.length).mult(random(explosionForce * 0.5, explosionForce));
     p.applyForce(force);
   }
 
-  // Kickによる部分弾け
-  if (bass > 180 && random() < 0.3) {
-    let burstCenter = floor(random(sphereParticles.length));
-    activeBursts.push({ id: burstCenter, start: now });
-  }
+  lastKickTime = millis();
+}
 
-  // 弾けた点を中心に周囲を巻き込んで膨張
-  for (let burst of activeBursts) {
-    if (now - burst.start > 180) continue;
-    let origin = sphereParticles[burst.id].basePos;
-    for (let p of sphereParticles) {
-      let d = p.basePos.dist(origin);
-      if (d < 80) {
-        let dir = p.basePos.copy().sub(origin).normalize().mult(25);
-        p.applyForce(dir);
+// === メッシュ接続 ===
+function updateMesh() {
+  meshConnections = [];
+
+  for (let i = 0; i < particles.length; i++) {
+    let a = particles[i];
+    for (let j = i + 1; j < particles.length; j++) {
+      let b = particles[j];
+      let d = p5.Vector.dist(a.pos, b.pos);
+      if (d < connectionThreshold) {
+        meshConnections.push({ a: a, b: b, timer: meshDuration });
       }
     }
   }
+}
 
-  // 更新・描画
-  for (let p of sphereParticles) {
+// === メイン描画 ===
+function drawVisual3() {
+  background(0);
+  orbitControl();
+
+  let bass = getBass();
+  let treble = getHi();
+  let now = millis();
+
+  if (bass > 180 && now - lastKickTime > kickCooldown) {
+    triggerKickExplosion();
+  }
+
+  if (treble > 150) {
+    updateMesh();
+  }
+
+  // update + draw particles
+  for (let p of particles) {
     p.update();
     p.display();
   }
 
-  // 線の一時描画（高音）
-  connections.clear();
-  if (treble > 100) {
-    for (let i = 0; i < sphereParticles.length; i++) {
-      let a = sphereParticles[i];
-      for (let j = i + 1; j < sphereParticles.length; j++) {
-        let b = sphereParticles[j];
-        let d = a.pos.dist(b.pos);
-        if (d < connectionThreshold) {
-          let key = [a.id, b.id].join("-");
-          connections.add(key);
-        }
-      }
+  // draw fading mesh lines
+  for (let i = meshConnections.length - 1; i >= 0; i--) {
+    let m = meshConnections[i];
+    if (m.timer-- <= 0) {
+      meshConnections.splice(i, 1);
+      continue;
     }
-  }
-
-  // 点滅的に描画
-  stroke(255, 200);
-  for (let key of connections) {
-    if (random() < 0.3) continue; // 点滅
-    let ids = key.split("-").map(Number);
-    let a = sphereParticles[ids[0]];
-    let b = sphereParticles[ids[1]];
-    strokeWeight(1.5);
-    line(a.pos.x, a.pos.y, a.pos.z, b.pos.x, b.pos.y, b.pos.z);
+    stroke(200, 100, 255, map(m.timer, 0, meshDuration, 0, 255));
+    strokeWeight(1);
+    line(m.a.pos.x, m.a.pos.y, m.a.pos.z, m.b.pos.x, m.b.pos.y, m.b.pos.z);
   }
 }
