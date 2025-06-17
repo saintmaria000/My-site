@@ -7,8 +7,8 @@ let lastLaserTime = 0;
 let laserCooldown = 300;
 
 let spectrum = [];
-let orbs = [];       // 軌道魂
-let sparkles = [];   // 点滅魂
+let orbs = [];
+let sparkles = [];
 
 function initVisual3() {
   particles = [];
@@ -39,7 +39,7 @@ function drawVisual3() {
   // === レーザー発射（Kick） ===
   if (bass > 180 && now - lastLaserTime > laserCooldown) {
     lastLaserTime = now;
-    let numLasers = floor(random(1, 4)); // 1〜2本
+    let numLasers = floor(random(1, 3));
     for (let i = 0; i < numLasers; i++) {
       lasers.push({
         start: createVector(0, 0, 0),
@@ -51,10 +51,9 @@ function drawVisual3() {
   }
 
   // === 魂出現（高音反応） ===
-  if (treble > 140) {
+  if (treble > 135) {
     // 軌道魂
-    let n = floor(random(2, 4));
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < floor(random(2, 4)); i++) {
       orbs.push({
         angle: random(TWO_PI),
         speed: random(0.01, 0.03),
@@ -63,7 +62,6 @@ function drawVisual3() {
         r: radius + random(10, 30)
       });
     }
-
     // 点滅魂
     for (let i = 0; i < 3; i++) {
       sparkles.push({
@@ -74,7 +72,7 @@ function drawVisual3() {
     }
   }
 
-  // === 魂描画（軌道魂） ===
+  // === 魂描画 ===
   for (let i = orbs.length - 1; i >= 0; i--) {
     let orb = orbs[i];
     let age = now - orb.startTime;
@@ -83,7 +81,7 @@ function drawVisual3() {
       continue;
     }
     let t = age / 3000;
-    let angle = orb.angle + t * TWO_PI * orb.speed * 60; // BPM風に
+    let angle = orb.angle + t * TWO_PI * orb.speed * 60;
     let pos = createVector(orb.r * cos(angle), orb.r * sin(angle), 0);
     pos = rotateVectorAroundAxis(pos, orb.axis, angle);
     push();
@@ -94,7 +92,6 @@ function drawVisual3() {
     pop();
   }
 
-  // === 点滅魂（ランダムポワポワ） ===
   for (let i = sparkles.length - 1; i >= 0; i--) {
     let s = sparkles[i];
     let age = now - s.startTime;
@@ -115,9 +112,9 @@ function drawVisual3() {
   for (let l of lasers) {
     let elapsed = now - l.startTime;
     if (elapsed > l.duration) continue;
-    let progress = elapsed / l.duration;
-    let beamWidth = 8 * (1 - abs(sin(progress * PI)));
-    let alpha = map(1 - progress, 0, 1, 0, 100);
+    let t = elapsed / l.duration;
+    let beamWidth = 8 * (1 - abs(sin(t * PI)));
+    let alpha = map(1 - t, 0, 1, 0, 100);
     let endPos = p5.Vector.add(l.start, p5.Vector.mult(l.dir, 2000));
     push();
     strokeWeight(beamWidth);
@@ -131,7 +128,7 @@ function drawVisual3() {
   for (let p of particles) {
     let displacement = createVector();
 
-    // レーザー回避（背面除外）
+    // レーザーによる穴（縮小）===
     for (let l of lasers) {
       let elapsed = now - l.startTime;
       if (elapsed > l.duration) continue;
@@ -142,37 +139,37 @@ function drawVisual3() {
       let projLength = p.basePos.dot(beamDir);
       let closestPoint = p5.Vector.mult(beamDir, projLength);
       let distToBeam = p.basePos.dist(closestPoint);
-      if (distToBeam < 80) {
-        let repel = p.basePos.copy().sub(closestPoint).normalize().mult(80 * (1 - elapsed / l.duration));
+      if (distToBeam < 70) { // ← 小さくなった
+        let repel = p.basePos.copy().sub(closestPoint).normalize().mult(60 * (1 - elapsed / l.duration));
         displacement.add(repel);
       }
     }
 
-    // 波打ち（phi × spectrumで面状うねり）
+    // スペクトラム波強化
     let phiIndex = floor(map(p.phi, 0, PI, 0, spectrum.length));
-    let amp = map(spectrum[phiIndex], 0, 255, 0, 1.5);
-    let wave = sin(p.phi * 4 + frameCount * 0.08);
+    let amp = map(spectrum[phiIndex], 0, 255, 0, 1.8);
+    let wave = sin(p.phi * 4 + frameCount * 0.1);
     let normal = p.basePos.copy().normalize();
-    displacement.add(normal.mult(wave * amp * 30)); // 補強済み
+    displacement.add(normal.mult(wave * amp * 30));
 
     let target = p.basePos.copy().add(displacement);
-    p.pos.lerp(target, 0.28); // 穴の戻り速度強化
+    p.pos.lerp(target, 0.28);
   }
 
-  // === 中音メッシュ（明滅） ===
-  for (let i = 0; i < particles.length; i++) {
-    let a = particles[i];
-    for (let j = i + 1; j < particles.length; j++) {
-      let b = particles[j];
-      let d = a.pos.dist(b.pos);
-      if (d < 50 && random() < 0.5) {
-        let alpha = map(mid, 0, 255, 0, 100);
-        strokeWeight(1);
-        stroke(180, 100, 100, alpha);
-        line(a.pos.x, a.pos.y, a.pos.z, b.pos.x, b.pos.y, b.pos.z);
-      }
-    }
+  // === 曲線メッシュ接続（中音反応） ===
+  noFill();
+  strokeWeight(1);
+  beginShape();
+  for (let i = 0; i < particles.length - 2; i += 12) {
+    let a = particles[i].pos;
+    let b = particles[i + 1].pos;
+    let c = particles[i + 2].pos;
+    stroke(180, 100, 100, map(mid, 0, 255, 0, 80));
+    curveVertex(a.x, a.y, a.z);
+    curveVertex(b.x, b.y, b.z);
+    curveVertex(c.x, c.y, c.z);
   }
+  endShape();
 
   // === パーティクル描画 ===
   noStroke();
@@ -184,11 +181,10 @@ function drawVisual3() {
     pop();
   }
 
-  // === レーザー除去 ===
   lasers = lasers.filter(l => now - l.startTime < l.duration);
 }
 
-// 補助：任意軸回転
+// 回転補助
 function rotateVectorAroundAxis(vec, axis, angle) {
   let cosA = cos(angle);
   let sinA = sin(angle);
