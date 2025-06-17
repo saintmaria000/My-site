@@ -84,7 +84,7 @@ function drawVisual3() {
   for (let p of particles) {
     push();
     translate(p.pos.x, p.pos.y, p.pos.z);
-    sphere(2);
+    sphere(1.2);
     pop();
   }
 }
