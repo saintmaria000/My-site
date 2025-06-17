@@ -9,7 +9,7 @@ let lastSpikeTime = 0;
 let lasers = [];
 let laserDuration = ranfom(1200, 3000);
 
-// === 初期化 ===
+// === 初期化 === 5
 function initVisual3() {
   particles = [];
   for (let i = 0; i < numParticles; i++) {
