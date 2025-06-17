@@ -44,7 +44,7 @@ function drawVisual3() {
     }
     lastSpikeTime = now;
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
       let dir = p5.Vector.random3D();
       lasers.push({ start: createVector(0, 0, 0), dir, startTime: now });
     }
