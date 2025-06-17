@@ -7,7 +7,7 @@ let spikeDuration = 300;
 let lastSpikeTime = 0;
 
 let lasers = [];
-let laserDuration = 2000;
+let laserDuration = ranfom(1200, 3000);
 
 // === 初期化 ===
 function initVisual3() {
