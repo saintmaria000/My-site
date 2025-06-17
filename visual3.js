@@ -117,7 +117,7 @@ function drawVisual3() {
     let amp = map(spectrum[phiIndex], 0, 255, 0, 1.5);
     let wave = sin(p.phi * 4 + frameCount * 0.08);
     let normal = p.basePos.copy().normalize();
-    displacement.add(normal.mult(wave * amp * 23));
+    displacement.add(normal.mult(wave * amp * 28));
 
     p.pos.lerp(p.basePos.copy().add(displacement), 0.24);
   }
