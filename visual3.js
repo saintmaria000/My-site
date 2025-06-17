@@ -39,7 +39,7 @@ function drawVisual3() {
   // === レーザー発射（Kick） ===
   if (bass > 180 && now - lastLaserTime > laserCooldown) {
     lastLaserTime = now;
-    let numLasers = floor(random(1, 3)); // 1〜2本
+    let numLasers = floor(random(1, 4)); // 1〜2本
     for (let i = 0; i < numLasers; i++) {
       lasers.push({
         start: createVector(0, 0, 0),
