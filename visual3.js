@@ -1,4 +1,5 @@
-//3
+//4
+
 let particles = [];
 let numParticles = 1000;
 let radius = 250;
@@ -9,7 +10,8 @@ let laserCooldown = 300;
 
 let spectrum = [];
 let orbs = [];       // 軌道魂
-let sparkles = [];   // ポワポワ魂（点滅）
+let sparkles = [];   // ポワポワ魂
+let volumeHistory = [];
 
 function initVisual3() {
   particles = [];
@@ -25,6 +27,7 @@ function initVisual3() {
   lasers = [];
   orbs = [];
   sparkles = [];
+  volumeHistory = [];
 }
 
 function drawVisual3() {
@@ -37,11 +40,15 @@ function drawVisual3() {
   let treble = fft.getEnergy(6000, 12000);
   spectrum = fft.analyze();
 
-  // === レーザー発射 ===
+  // 全体音量（Amplitudeベース）
+  let vol = getVokumeLevel();
+  volumeHistory.push(vol);
+  if (volumeHistory.length > 10) volumeHistory.shift();
+
+  // ===== レーザー発射（キック） =====
   if (bass > 180 && now - lastLaserTime > laserCooldown) {
     lastLaserTime = now;
-    let numLasers = floor(random(1, 4));
-    for (let i = 0; i < numLasers; i++) {
+    for (let i = 0; i < floor(random(1, 4)); i++) {
       lasers.push({
         start: createVector(0, 0, 0),
         dir: p5.Vector.random3D(),
@@ -51,9 +58,8 @@ function drawVisual3() {
     }
   }
 
-  // === 魂出現（高音反応） ===
+  // ===== 軌道魂（高音反応） =====
   if (treble > 108) {
-    // 軌道魂
     for (let i = 0; i < floor(random(1, 3)); i++) {
       orbs.push({
         angle: random(TWO_PI),
@@ -63,17 +69,20 @@ function drawVisual3() {
         r: radius + random(10, 30)
       });
     }
-    // ポワポワ魂（頻度アップ）
-    for (let i = 0; i < 4; i++) {
+  }
+
+  // ===== ポワポワ魂（静寂トリガー）=====
+  if (volumeHistory.length >= 2 && volumeHistory[volumeHistory.length - 2] > 0.12 && vol < 0.07) {
+    for (let i = 0; i < 5; i++) {
       sparkles.push({
-        pos: p5.Vector.random3D().mult(radius + random(5, 30)),
+        pos: p5.Vector.random3D().mult(radius + random(10, 30)),
         startTime: now,
-        lifespan: 1000 + random(300)
+        lifespan: 1200 + random(300)
       });
     }
   }
 
-  // === 魂描画（軌道魂） ===
+  // === 軌道魂描画 ===
   for (let i = orbs.length - 1; i >= 0; i--) {
     let orb = orbs[i];
     let age = now - orb.startTime;
@@ -93,7 +102,7 @@ function drawVisual3() {
     pop();
   }
 
-  // === 点滅魂 ===
+  // === ポワポワ魂描画 ===
   for (let i = sparkles.length - 1; i >= 0; i--) {
     let s = sparkles[i];
     let age = now - s.startTime;
@@ -126,11 +135,10 @@ function drawVisual3() {
     pop();
   }
 
-  // === パーティクル位置更新 ===
+  // === パーティクル更新 ===
   for (let p of particles) {
     let displacement = createVector();
 
-    // 穴：ビームの影響範囲を狭め
     for (let l of lasers) {
       let elapsed = now - l.startTime;
       if (elapsed > l.duration) continue;
@@ -147,18 +155,16 @@ function drawVisual3() {
       }
     }
 
-    // 波：スペクトラム反応の面うねり
     let phiIndex = floor(map(p.phi, 0, PI, 0, spectrum.length));
     let amp = map(spectrum[phiIndex], 0, 255, 0, 1.8);
     let wave = sin(p.phi * 4 + frameCount * 0.1);
     let normal = p.basePos.copy().normalize();
     displacement.add(normal.mult(wave * amp * 30));
-
     let target = p.basePos.copy().add(displacement);
     p.pos.lerp(target, 0.28);
   }
 
-  // === 中音のメッシュ（直線・明滅） ===
+  // === 中音メッシュ ===
   for (let i = 0; i < particles.length; i++) {
     let a = particles[i];
     for (let j = i + 1; j < particles.length; j++) {
@@ -183,10 +189,11 @@ function drawVisual3() {
     pop();
   }
 
+  // === レーザー削除 ===
   lasers = lasers.filter(l => now - l.startTime < l.duration);
 }
 
-// 補助：任意軸回転
+// 任意軸回転
 function rotateVectorAroundAxis(vec, axis, angle) {
   let cosA = cos(angle);
   let sinA = sin(angle);
