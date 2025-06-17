@@ -1,136 +1,90 @@
-// === パラメータ ===3
-const numParticles = 800;
-const sphereRadius = 200;
-const maxConnections = 4;
-const connectionThreshold = 100;
-const explosionForce = 25;
-const meshDuration = 4; // フレーム数
-
 let particles = [];
-let meshConnections = [];
-let lastKickTime = 0;
-let kickCooldown = 300;
+let connections = [];
+let numParticles = 800;
+let radius = 250;
+let spikeSources = [];
+let spikeDuration = 200;
+let lastSpikeTime = 0;
 
-// === 初期化 ===
 function initVisual3() {
   particles = [];
   for (let i = 0; i < numParticles; i++) {
     let phi = Math.acos(1 - 2 * (i + 0.5) / numParticles);
     let theta = Math.PI * (1 + Math.sqrt(5)) * i;
-    let x = sphereRadius * Math.sin(phi) * Math.cos(theta);
-    let y = sphereRadius * Math.sin(phi) * Math.sin(theta);
-    let z = sphereRadius * Math.cos(phi);
+
+    let x = radius * Math.sin(phi) * Math.cos(theta);
+    let y = radius * Math.sin(phi) * Math.sin(theta);
+    let z = radius * Math.cos(phi);
+
     let pos = createVector(x, y, z);
-    particles.push(new Particle3(pos, i));
-  }
-  meshConnections = [];
-}
-
-// === パーティクルクラス ===
-class Particle3 {
-  constructor(pos, id) {
-    this.id = id;
-    this.basePos = pos.copy();
-    this.pos = pos.copy();
-    this.vel = createVector();
-    this.acc = createVector();
-  }
-
-  applyForce(force) {
-    this.acc.add(force);
-  }
-
-  update() {
-    this.vel.add(this.acc);
-    this.pos.add(this.vel);
-    this.vel.mult(0.9);
-    this.acc.mult(0);
-  }
-
-  display() {
-    push();
-    translate(this.pos.x, this.pos.y, this.pos.z);
-    noStroke();
-    fill(220, 150, 255, 160);
-    sphere(2);
-    pop();
+    particles.push({
+      basePos: pos.copy(),
+      pos: pos.copy(),
+      id: i
+    });
   }
 }
 
-// === キックによる爆発 ===
-function triggerKickExplosion() {
-  const seeds = [];
-  while (seeds.length < 5) {
-    let i = floor(random(particles.length));
-    if (!seeds.includes(i)) seeds.push(i);
-  }
-
-  for (let i = 0; i < particles.length; i++) {
-    let p = particles[i];
-    let force = createVector();
-    for (let sid of seeds) {
-      let dir = p5.Vector.sub(p.pos, particles[sid].pos);
-      force.add(dir.normalize());
-    }
-    force.div(seeds.length).mult(random(explosionForce * 0.5, explosionForce));
-    p.applyForce(force);
-  }
-
-  lastKickTime = millis();
-}
-
-// === メッシュ接続 ===
-function updateMesh() {
-  meshConnections = [];
-
-  for (let i = 0; i < particles.length; i++) {
-    let a = particles[i];
-    for (let j = i + 1; j < particles.length; j++) {
-      let b = particles[j];
-      let d = p5.Vector.dist(a.pos, b.pos);
-      if (d < connectionThreshold) {
-        meshConnections.push({ a: a, b: b, timer: meshDuration });
-      }
-    }
-  }
-}
-
-// === メイン描画 ===
 function drawVisual3() {
   background(0);
   orbitControl();
 
-  let bass = getBass();
-  let treble = getHi();
-  let now = millis();
+  let bass = fft.getEnergy(20, 60);
+  let treble = fft.getEnergy(8000, 12000);
 
-  if (bass > 180 && now - lastKickTime > kickCooldown) {
-    triggerKickExplosion();
-  }
-
-  if (treble > 150) {
-    updateMesh();
-  }
-
-  // update + draw particles
-  for (let p of particles) {
-    // 戻る力を適用
-    let restoringForce = p5.Vector.sub(p.basePos, p.pos).mult(0.01);
-    p.applyForce(restoringForce);
-
-    p.update();
-    p.display();
-  }
-
-  // draw fading mesh lines
-  for (let i = meshConnections.length - 1; i >= 0; i--) {
-    let m = meshConnections[i];
-    if (m.timer-- <= 0) {
-      meshConnections.splice(i, 1);
-      continue;
+  // --- キックでスパイク発生 ---
+  if (bass > 180 && millis() - lastSpikeTime > spikeDuration) {
+    spikeSources = [];
+    for (let i = 0; i < 5; i++) {
+      spikeSources.push(floor(random(particles.length)));
     }
-    stroke(200, 100, 255, map(m.timer, 0, meshDuration, 0, 255));
-    strokeWeight(1);
-    line(m.a.pos.x, m.a.pos.y, m.a.pos.z, m.b.pos.x, m.b.pos.y, m.b.pos.z);
+    lastSpikeTime = millis();
+  }
+
+  let spikeProgress = constrain((millis() - lastSpikeTime) / spikeDuration, 0, 1);
+
+  // --- パーティクル位置更新 ---
+  for (let i = 0; i < particles.length; i++) {
+    let p = particles[i];
+    let displacement = createVector(0, 0, 0);
+
+    // スパイク効果
+    for (let s of spikeSources) {
+      let d = p.basePos.dist(particles[s].basePos);
+      if (d < 100) {
+        let dir = p.basePos.copy().sub(particles[s].basePos).normalize();
+        let strength = map(d, 0, 100, 1, 0) * (1 - spikeProgress);
+        displacement.add(dir.mult(300 * strength));
+      }
+    }
+
+    // 緩やかに元に戻る
+    p.pos = p5.Vector.lerp(p.pos, p.basePos.copy().add(displacement), 0.2);
+  }
+
+  // --- 線描画（高音に反応） ---
+  strokeWeight(1);
+  colorMode(HSB, 360, 100, 100, 100);
+  for (let i = 0; i < particles.length; i++) {
+    let a = particles[i];
+    for (let j = i + 1; j < particles.length; j++) {
+      let b = particles[j];
+      let d = a.pos.dist(b.pos);
+      if (d < 50) {
+        let alpha = map(treble, 0, 255, 0, 100);
+        stroke(180, 80, 100, alpha);
+        line(a.pos.x, a.pos.y, a.pos.z, b.pos.x, b.pos.y, b.pos.z);
+      }
+    }
+  }
+
+  // --- パーティクル描画 ---
+  noStroke();
+  fill(180, 100, 100);
+  for (let p of particles) {
+    push();
+    translate(p.pos.x, p.pos.y, p.pos.z);
+    sphere(2);
+    pop();
   }
 }
