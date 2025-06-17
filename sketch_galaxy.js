@@ -10,7 +10,7 @@ function setup() {
   colorMode(HSB, 360, 100, 100, 100);
   setupUI();
   setupAudio();
-  initGalaxyStars();
+  initvisual2();
   
   // ファイル名を表示
   const nameDisplay = document.getElementById("file-name-display");
@@ -28,7 +28,7 @@ function draw() {
   updateAudio(); // 音の更新（fft.analyzeなど）を audio.js 側で実行
 
   background(0);
-  drawGalaxyVisual(); // visual2.js の関数を実行
+  drawvisual2(); // visual2.js の関数を実行
 
   // デバッグ情報表示
   if (isPlaying()) {
