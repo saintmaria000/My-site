@@ -1,14 +1,17 @@
-//2
+//3
 let particles = [];
-let numParticles = 1000;
-let radius = 250;
-
 let lasers = [];
-let lastLaserTime = 0;
-let laserCooldown = 300;
+let orbs = [];
 let spectrum = [];
 
-let orbs = [];
+let lastLaserTime = 0;
+let laserCooldown = 300;
+const laserRange = 80;
+const laserLength = 2000;
+const bpm = 120;
+const orbLifetime = 3000;
+const numParticles = 1000;
+const radius = 250;
 
 function initVisual3() {
   particles = [];
@@ -35,69 +38,80 @@ function drawVisual3() {
   let treble = fft.getEnergy(6000, 12000);
   spectrum = fft.analyze();
 
-  // === レーザー発射 ===
+  // === Laser (Kick)
   if (bass > 180 && now - lastLaserTime > laserCooldown) {
     lastLaserTime = now;
-    lasers.push({
-      start: createVector(0, 0, 0),
-      dir: p5.Vector.random3D(),
-      startTime: now,
-      duration: random(1200, 2000)
-    });
+    let numLasers = floor(random(1, 3));
+    for (let i = 0; i < numLasers; i++) {
+      let dir = p5.Vector.random3D();
+      lasers.push({
+        start: createVector(0, 0, 0),
+        dir,
+        startTime: now,
+        duration: random(1200, 2000)
+      });
+    }
   }
 
-  // === 魂（トレイル付き） ===
-  if (treble > 90 && random() < 0.4) {
+  // === Orbs (Treble)
+  if (treble > 100 && random() < 0.5) {
+    let axis = p5.Vector.random3D();
+    let angle = random(TWO_PI);
+    let speed = (2 * PI) / (60 / bpm * 1000);  // rad/ms
     orbs.push({
+      axis,
+      angle,
+      speed,
       startTime: now,
-      axis: p5.Vector.random3D(),
-      baseAngle: random(TWO_PI),
-      speed: random(0.015, 0.03),
-      eccentricity: random(0.7, 1.3),
       trail: []
     });
   }
 
+  // === Orbs Draw
   for (let i = orbs.length - 1; i >= 0; i--) {
     let orb = orbs[i];
     let age = now - orb.startTime;
-    if (age > 3000) {
+    if (age > orbLifetime) {
       orbs.splice(i, 1);
       continue;
     }
-    let t = age / 3000;
-    let angle = orb.baseAngle + t * TWO_PI * orb.speed;
-    let r = radius + 30;
-    let pos = createVector(r * cos(angle), r * sin(angle) * orb.eccentricity, 0);
-    pos = rotateVectorAroundAxis(pos, orb.axis, angle);
-    orb.trail.push(pos.copy());
-    if (orb.trail.length > 20) orb.trail.shift();
 
-    noFill();
-    stroke(300, 100, 255, 100);
-    beginShape();
-    for (let pt of orb.trail) {
-      vertex(pt.x, pt.y, pt.z);
+    let t = age / orbLifetime;
+    orb.angle += orb.speed * deltaTime;
+    let r = radius + 30 + 10 * sin(t * TWO_PI * 2); // ゆらぎ
+
+    let pos = createVector(r * cos(orb.angle), r * sin(orb.angle), 0);
+    pos = rotateVectorAroundAxis(pos, orb.axis, orb.angle);
+    orb.trail.push(pos.copy());
+    if (orb.trail.length > 15) orb.trail.shift();
+
+    noStroke();
+    for (let j = 0; j < orb.trail.length; j++) {
+      let trailAlpha = map(j, 0, orb.trail.length, 0, 80);
+      let p = orb.trail[j];
+      push();
+      translate(p.x, p.y, p.z);
+      fill(300, 100, 255, trailAlpha);
+      sphere(3);
+      pop();
     }
-    endShape();
 
     push();
     translate(pos.x, pos.y, pos.z);
-    noStroke();
-    fill(300, 100, 255, 180);
-    sphere(4);
+    fill(300, 100, 255, 120 * (1 - t));
+    sphere(6);
     pop();
   }
 
-  // === レーザー描画 ===
+  // === Laser Draw
   for (let l of lasers) {
     let elapsed = now - l.startTime;
     if (elapsed > l.duration) continue;
-    let progress = elapsed / l.duration;
-    let beamWidth = 8 * (1 - abs(sin(progress * PI)));
-    let alpha = map(1 - progress, 0, 1, 0, 100);
-    let endPos = p5.Vector.add(l.start, p5.Vector.mult(l.dir, 2000));
 
+    let t = elapsed / l.duration;
+    let beamWidth = 8 * (1 - abs(sin(t * PI)));
+    let alpha = map(1 - t, 0, 1, 0, 100);
+    let endPos = p5.Vector.add(l.start, p5.Vector.mult(l.dir, laserLength));
     push();
     strokeWeight(beamWidth);
     colorMode(HSB, 360, 100, 100, 100);
@@ -106,36 +120,39 @@ function drawVisual3() {
     pop();
   }
 
-  // === パーティクル処理 ===
+  // === Particle Update
   for (let p of particles) {
     let displacement = createVector();
 
-    // レーザー回避（正面のみ）
+    // Laser Repel
     for (let l of lasers) {
       let elapsed = now - l.startTime;
       if (elapsed > l.duration) continue;
-      let dot = p.basePos.copy().normalize().dot(l.dir);
-      if (dot < 0.4) continue;
 
-      let closest = p5.Vector.mult(l.dir, p.basePos.dot(l.dir));
-      let d = p.basePos.dist(closest);
-      if (d < 80) {
-        let repel = p.basePos.copy().sub(closest).normalize().mult(80 * (1 - elapsed / l.duration));
+      let toParticle = p.basePos.copy().normalize();
+      if (toParticle.dot(l.dir) < 0.4) continue;
+
+      let proj = p.basePos.dot(l.dir);
+      let beamPoint = p5.Vector.mult(l.dir, proj);
+      let dist = p.basePos.dist(beamPoint);
+      if (dist < laserRange) {
+        let repel = p.basePos.copy().sub(beamPoint).normalize().mult((laserRange - dist));
         displacement.add(repel);
       }
     }
 
-    // 波（連続性のあるスペクトラム）
+    // Spectrum Wave (phi軸に沿って滑らか)
     let phiIndex = floor(map(p.phi, 0, PI, 0, spectrum.length));
     let amp = map(spectrum[phiIndex], 0, 255, 0, 1.5);
     let wave = sin(p.phi * 4 + frameCount * 0.08);
     let normal = p.basePos.copy().normalize();
     displacement.add(normal.mult(wave * amp * 23));
 
-    p.pos.lerp(p.basePos.copy().add(displacement), 0.24);
+    let target = p.basePos.copy().add(displacement);
+    p.pos.lerp(target, 0.24);
   }
 
-  // === 線（中音）===
+  // === Wireframe (Mid)
   for (let i = 0; i < particles.length; i++) {
     let a = particles[i];
     for (let j = i + 1; j < particles.length; j++) {
@@ -150,7 +167,7 @@ function drawVisual3() {
     }
   }
 
-  // === パーティクル描画 ===
+  // === Particle Draw
   noStroke();
   fill(190, 100, 255);
   for (let p of particles) {
@@ -160,10 +177,11 @@ function drawVisual3() {
     pop();
   }
 
+  // === Laser cleanup
   lasers = lasers.filter(l => now - l.startTime < l.duration);
 }
 
-// 任意軸回転補助関数
+// === ヘルパー：任意軸回転 ===
 function rotateVectorAroundAxis(vec, axis, angle) {
   let cosA = cos(angle);
   let sinA = sin(angle);
