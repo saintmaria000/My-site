@@ -41,7 +41,7 @@ function drawVisual3() {
   spectrum = fft.analyze();
 
   // 全体音量（Amplitudeベース）
-  let vol = getVokumeLevel();
+  let vol = getVolumeLevel();
   volumeHistory.push(vol);
   if (volumeHistory.length > 10) volumeHistory.shift();
 
