@@ -38,6 +38,10 @@ function updateAudio() {
   fft.analyze();
 }
 
+function getVolumeLevel() {
+  return amplitude.getLevel();
+}
+
 function getSpectrum() {
   return fft.analyze(); // 配列
 }
