@@ -10,12 +10,12 @@ function initVisual4() {
 
 function drawVisual4() {
   noStroke();
-  fill(0, 10); // 残像フェード
+  fill(0, 10); // 黒フェード背景
   rect(0, 0, width, height);
 
   colorMode(HSB, 360, 100, 100, 100);
 
-  // 1万以下なら粒子を追加（左・右・下から）
+  // パーティクル追加（最大1万まで）
   if (particles.length < maxParticles) {
     for (let i = 0; i < emissionRate; i++) {
       let edge = random(["left", "right", "bottom"]);
@@ -30,39 +30,41 @@ function drawVisual4() {
     }
   }
 
-  let level = getBass();  // audio.js 側関数
+  let level = getBass(); // audio.js 側関数
 
   for (let p of particles) {
     p.prev.set(p.pos);
 
-    // フロー（Perlin noise）
+    // フローベクトル
     let angle = noise(p.pos.x * flowFieldScale, p.pos.y * flowFieldScale, frameCount * 0.005) * TWO_PI * 2;
     let v = p5.Vector.fromAngle(angle).mult(1.2);
     p.pos.add(v);
 
-    // ワープ処理（対角ではなく明示的に方向別）
-    if (p.pos.x < 0) p.pos.x = width;
-    if (p.pos.x > width) p.pos.x = 0;
-    if (p.pos.y < 0) p.pos.y = height;
+    // ワープ判定
+    let wrapped = false;
+    if (p.pos.x < 0) { p.pos.x = width; wrapped = true; }
+    if (p.pos.x > width) { p.pos.x = 0; wrapped = true; }
+    if (p.pos.y < 0) { p.pos.y = height; wrapped = true; }
     if (p.pos.y > height) {
-      p.pos.x = random() < 0.5 ? 0 : width;         // 左右どちらか
-      p.pos.y = height * 0.5 + random(height * 0.5); // 下半分のランダム位置
+      p.pos.x = random() < 0.5 ? 0 : width;
+      p.pos.y = height * 0.5 + random(height * 0.5);
+      wrapped = true;
     }
 
     // フェードイン
     if (p.alpha < 100) p.alpha += 2;
 
-    // 色設定（赤〜橙グラデーション）
+    // 色
     let hue = 10 + noise(p.pos.x * 0.01, p.pos.y * 0.01) * 20;
     let alpha = p.alpha;
 
-    // 点滅（低音）
-    if (level > pulseThreshold) {
-      stroke(0, 0, 100, alpha);
-    } else {
-      stroke(hue, 100, 100, alpha);
+    if (!wrapped) {
+      if (level > pulseThreshold) {
+        stroke(0, 0, 100, alpha);  // 白点滅
+      } else {
+        stroke(hue, 100, 100, alpha);  // 通常色
+      }
+      line(p.prev.x, p.prev.y, p.pos.x, p.pos.y);
     }
-
-    line(p.prev.x, p.prev.y, p.pos.x, p.pos.y);
   }
 }
