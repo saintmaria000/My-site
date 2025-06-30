@@ -7,7 +7,7 @@ const flowFieldScale = 0.005;     // 🔧 ノイズの滑らかさ
 const noiseStrength = 1.2;        // 🔧 ノイズの勢い
 const upwardInfluence = 0.4;      // 🔧 上昇方向ベクトルの影響度
 
-const reflowChance = 0.2;         // ワープ時のランダム再配置確率
+const reflowChance = 0.4;         // ワープ時のランダム再配置確率
 
 function initVisual4() {
   particles = [];
