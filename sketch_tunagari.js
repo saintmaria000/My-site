@@ -12,6 +12,7 @@ function setup() {
   setupUI();
   setupAudio();
   initVisual3();
+  setupDebugUI();
 
   // ファイル名を表示
   const nameDisplay = document.getElementById("file-name-display");
@@ -45,15 +46,8 @@ function draw() {
     fill(120, 100, 100); rect(50, height - bass, 30, bass);
     fill(40, 100, 100); rect(100, height - mid, 30, mid);
     fill(340, 100, 100); rect(150, height - hi, 30, hi);
-
-    updateDebugInfo({
-      waveformLength: waveform.length,
-      isPlaying: true,
-      volume: volume.toFixed(2),
-      bass: bass.toFixed(1),
-      mid: mid.toFixed(1),
-      hi: hi.toFixed(1)
-    });
+    
+    updateDebugInfo();
   }
 }
 
