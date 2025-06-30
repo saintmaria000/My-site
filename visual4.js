@@ -1,5 +1,5 @@
 let particles = [];
-let maxParticles = 10000;
+let maxParticles = 20000;
 let emissionRate = 50;
 let flowFieldScale = 0.01;
 let pulseThreshold = 0.9;
