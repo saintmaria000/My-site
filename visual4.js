@@ -1,3 +1,28 @@
+let fireParticles = [];
+let numFireParticles = 5000;
+let fireHeight;
+let fireWidth;
+
+function initVisual4() {
+  fireHeight = height;
+  fireWidth = width;
+  fireParticles = [];
+
+  for (let i = 0; i < numFireParticles; i++) {
+    let x = random(-fireWidth / 2, fireWidth / 2);
+    let y = random(-fireHeight, 0); // パーティクル帯の基準Y
+    let z = random(0.2, 1); // 奥行き（立体感）
+
+    fireParticles.push({
+      basePos: createVector(x, y),
+      noiseOffset: random(1000),
+      hue: random(20, 40),
+      z: z,
+      flashTimer: 0
+    });
+  }
+}
+
 function drawVisual4() {
   push();
   translate(width / 2, height);  // 中央下端起点
