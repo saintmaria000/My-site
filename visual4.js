@@ -1,51 +1,67 @@
-let flowParticles = [];
+// visual4.js（p5.js 2D particle system）
+
+let particles = [];
 let maxParticles = 10000;
-let flowFieldScale = 0.005;
+let emissionRate = 50;
+let flowFieldScale = 0.01;
+let pulseThreshold = 0.7;
 
 function initVisual4() {
-  flowParticles = [];
+  particles = [];
 }
 
 function drawVisual4() {
-  // 背景フェード
   noStroke();
-  fill(0, 20);
+  fill(0, 10);
   rect(0, 0, width, height);
 
   colorMode(HSB, 360, 100, 100, 100);
 
-  let level = getBass(); // audio.js 経由で取得
-  let flash = level > 180;
-
-  // 新規パーティクル生成（最大数まで下から発生）
-  if (flowParticles.length < maxParticles) {
-    let x = random(width);
-    let y = random(height * 0.5, height);  // 下半分
-    flowParticles.push({
-      pos: createVector(x, y),
-      prev: createVector(x, y)
-    });
+  // 発生処理：10000個未満なら端から追加
+  if (particles.length < maxParticles) {
+    for (let i = 0; i < emissionRate; i++) {
+      let edge = random(["left", "right", "bottom"]);
+      let x = (edge === "left") ? 0 :
+              (edge === "right") ? width : random(width);
+      let y = (edge === "bottom") ? height : random(height);
+      particles.push({
+        pos: createVector(x, y),
+        prev: createVector(x, y),
+        alpha: 0
+      });
+    }
   }
 
-  for (let p of flowParticles) {
-    let angle = noise(p.pos.x * flowFieldScale, p.pos.y * flowFieldScale, frameCount * 0.003) * TWO_PI * 2;
-    let v = p5.Vector.fromAngle(angle).mult(1.2);
+  let level = getBass();  // audio.js側の関数を使用
 
+  for (let p of particles) {
     p.prev.set(p.pos);
+
+    // Perlin noise による流れ
+    let angle = noise(p.pos.x * flowFieldScale, p.pos.y * flowFieldScale, frameCount * 0.005) * TWO_PI * 2;
+    let v = p5.Vector.fromAngle(angle).mult(1.2);
     p.pos.add(v);
 
-    // 対角循環（軌跡は描画しない）
-    let wrapped = false;
-    if (p.pos.x < 0) { p.pos.x = width; p.pos.y = height - p.pos.y; wrapped = true; }
-    if (p.pos.x > width) { p.pos.x = 0; p.pos.y = height - p.pos.y; wrapped = true; }
-    if (p.pos.y < 0) { p.pos.y = height; p.pos.x = width - p.pos.x; wrapped = true; }
-    if (p.pos.y > height) { p.pos.y = 0; p.pos.x = width - p.pos.x; wrapped = true; }
+    // 対角循環ワープ
+    if (p.pos.x < 0) p.pos.x = width;
+    if (p.pos.x > width) p.pos.x = 0;
+    if (p.pos.y < 0) p.pos.y = height;
+    if (p.pos.y > height) p.pos.y = 0;
 
-    if (!wrapped) {
-      let hue = flash ? 0 : map(p.pos.y, 0, height, 10, 30);  // 赤系
-      let alpha = flash ? 100 : map(p.pos.x, 0, width, 20, 80);
+    // フェードイン
+    if (p.alpha < 100) p.alpha += 2;
+
+    // 色設定（赤系）
+    let hue = 10 + noise(p.pos.x * 0.01, p.pos.y * 0.01) * 20;
+    let alpha = p.alpha;
+
+    // 低音で点滅
+    if (level > pulseThreshold) {
+      stroke(0, 0, 100, alpha);
+    } else {
       stroke(hue, 100, 100, alpha);
-      line(p.prev.x, p.prev.y, p.pos.x, p.pos.y);
     }
+
+    line(p.prev.x, p.prev.y, p.pos.x, p.pos.y);
   }
 }
