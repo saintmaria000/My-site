@@ -2,7 +2,6 @@ let particles = [];
 const maxParticles = 10000;
 const baseEmissionRate = 50;
 const flowFieldScale = 0.01;
-const pulseThreshold = 0.96; // キック音感度
 const reflowChance = 0.2;    // ワープ時のランダム再配置率
 
 function initVisual4() {
@@ -16,7 +15,7 @@ function drawVisual4() {
   colorMode(HSB, 360, 100, 100, 100);
 
   // === パーティクル生成 ===
-  let emissionRate = baseEmissionRate; // 毎フレーム最大追加数
+  let emissionRate = baseEmissionRate;
   while (particles.length < maxParticles && emissionRate-- > 0) {
     const edge = random(["left", "right", "bottom"]);
     const x = (edge === "left") ? 0 :
@@ -25,21 +24,19 @@ function drawVisual4() {
     particles.push({ pos: createVector(x, y), alpha: 0 });
   }
 
-  // === オーディオ反応 ===
-  const level = getBass();  // 低音エネルギー（audio.js 必須）
+  const kick = isKick(); // audio.js 側の関数：true/false
 
-  // === 各パーティクル更新 ===
   for (const p of particles) {
-    // ノイズに基づく移動方向
+    // ノイズベースの移動方向
     const angle = noise(p.pos.x * flowFieldScale, p.pos.y * flowFieldScale, frameCount * 0.005) * TWO_PI * 2;
     const v = p5.Vector.fromAngle(angle).mult(1.2);
     p.pos.add(v);
 
-    // === 画面端でのワープ処理 ===
+    // 画面端ワープ
     if (p.pos.x < 0 || p.pos.x > width) {
       p.pos.x = (p.pos.x < 0) ? width : 0;
       if (random() < reflowChance) p.pos.y = random(height);
-      continue; // 軌道線描画を防ぐ
+      continue;
     }
     if (p.pos.y < 0 || p.pos.y > height) {
       p.pos.y = (p.pos.y < 0) ? height : 0;
@@ -47,13 +44,13 @@ function drawVisual4() {
       continue;
     }
 
-    // === フェードイン ===
+    // フェードイン
     if (p.alpha < 100) p.alpha += 2;
 
-    // === 色と点滅 ===
+    // 色と点滅処理（キック時に白）
     const hue = 10 + noise(p.pos.x * 0.01, p.pos.y * 0.01) * 20;
     const alpha = p.alpha;
-    fill(level > pulseThreshold ? color(0, 0, 100, alpha) : color(hue, 100, 100, alpha));
+    fill(kick ? color(0, 0, 100, alpha) : color(hue, 100, 100, alpha));
     ellipse(p.pos.x, p.pos.y, 2, 2);
   }
 }
