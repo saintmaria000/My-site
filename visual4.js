@@ -1,6 +1,6 @@
 let fireParticles = [];
-let gridCols = 200;
-let gridRows = 120;
+let gridCols = 200;  // 横の粒子分割数
+let gridRows = 120;  // 縦の粒子分割数
 
 function initVisual4() {
   fireParticles = [];
@@ -23,32 +23,31 @@ function initVisual4() {
 
 function drawVisual4() {
   push();
-  translate(width / 2, height);
+  translate(width / 2, height);  // 描画の基準点を画面下中央に
   noStroke();
   colorMode(HSB, 360, 100, 100, 100);
-  background(0, 0, 0, 20); // 黒背景に軽い残像
+  background(0, 0, 0, 20);  // 軽い残像の黒背景
 
   let t = frameCount * 0.05;
-  let waveHeight = height;
-  let waveSpeed = 0.01;
-  let waveY = (x) => sin(x * waveSpeed + t) * waveHeight;
+  let waveAmplitude = 50;      // 波の振幅（xの揺れ幅）
+  let waveSpeed = 0.02;        // 波のスピード
+  let waveX = (y) => sin(y * waveSpeed - t) * waveAmplitude;  // 縦方向進行波
 
   for (let p of fireParticles) {
-    let waveCenterY = waveY(p.x);
-    let distance = abs(p.y - waveCenterY);
-    let threshold = 60; // 波の影響範囲
+    let waveCenterX = waveX(p.y);
+    let distance = abs(p.x - waveCenterX);
+    let threshold = 30;  // 波の影響範囲
 
-    // 0 = 波の中心（最大影響）、threshold = 外側（通常色）
+    // 波の中心に近いほど強い影響（色・透明度が変化）
     let intensity = constrain(1 - distance / threshold, 0, 1);
 
-    // 通常色 → 波中心色（橙 → 青白）への補間
-    let hue = lerp(30, 200, intensity);  // HSB: 30=橙, 200=青
-    let sat = lerp(100, 50, intensity);
-    let bri = lerp(100, 100, intensity);
-    let alpha = lerp(20, 100, intensity); // 中心ほど明るく
+    let hue = lerp(30, 200, intensity);      // オレンジ〜青
+    let sat = lerp(100, 50, intensity);      // 彩度
+    let bri = lerp(100, 100, intensity);     // 輝度（固定）
+    let alpha = lerp(20, 100, intensity);    // 透明度（中心で明るく）
 
     fill(hue, sat, bri, alpha);
-    ellipse(p.x, p.y, 2, 2);
+    ellipse(p.x, p.y, 2, 2);  // 粒子を描画
   }
 
   pop();
