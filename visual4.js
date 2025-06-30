@@ -32,7 +32,7 @@ function drawVisual4() {
     }
   }
 
-  let level = getBass();  // audio.js側の関数を使用
+  let level = getBass();  // audio.js 側の関数を使用
 
   for (let p of particles) {
     p.prev.set(p.pos);
@@ -42,11 +42,12 @@ function drawVisual4() {
     let v = p5.Vector.fromAngle(angle).mult(1.2);
     p.pos.add(v);
 
-    // 対角循環ワープ
-    if (p.pos.x < 0) p.pos.x = width;
-    if (p.pos.x > width) p.pos.x = 0;
-    if (p.pos.y < 0) p.pos.y = height;
-    if (p.pos.y > height) p.pos.y = 0;
+    // ワープ処理とワープフラグ
+    let wrapped = false;
+    if (p.pos.x < 0) { p.pos.x = width; wrapped = true; }
+    else if (p.pos.x > width) { p.pos.x = 0; wrapped = true; }
+    if (p.pos.y < 0) { p.pos.y = height; wrapped = true; }
+    else if (p.pos.y > height) { p.pos.y = 0; wrapped = true; }
 
     // フェードイン
     if (p.alpha < 100) p.alpha += 2;
@@ -55,13 +56,14 @@ function drawVisual4() {
     let hue = 10 + noise(p.pos.x * 0.01, p.pos.y * 0.01) * 20;
     let alpha = p.alpha;
 
-    // 低音で点滅
-    if (level > pulseThreshold) {
-      stroke(0, 0, 100, alpha);
-    } else {
-      stroke(hue, 100, 100, alpha);
-    }
+    if (!wrapped) {
+      if (level > pulseThreshold) {
+        stroke(0, 0, 100, alpha);  // 白点滅
+      } else {
+        stroke(hue, 100, 100, alpha);  // 通常色（赤系）
+      }
 
-    line(p.prev.x, p.prev.y, p.pos.x, p.pos.y);
+      line(p.prev.x, p.prev.y, p.pos.x, p.pos.y);
+    }
   }
 }
