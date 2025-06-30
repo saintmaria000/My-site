@@ -5,7 +5,7 @@ const baseEmissionRate = 50;
 // === ノイズと流れ調整 ===
 const flowFieldScale = 0.005;     // 🔧 ノイズの滑らかさ
 const noiseStrength = 1.2;        // 🔧 ノイズの勢い
-const upwardInfluence = 0.1;      // 🔧 上昇方向ベクトルの影響度
+const upwardInfluence = 0.4;      // 🔧 上昇方向ベクトルの影響度
 
 const reflowChance = 0.2;         // ワープ時のランダム再配置確率
 
