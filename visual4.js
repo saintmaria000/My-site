@@ -30,13 +30,13 @@ function drawVisual4() {
 
   let t = frameCount * 0.05;
   let waveHeight = height;
-  let waveSpeed = 0.02;
+  let waveSpeed = 0.01;
   let waveY = (x) => sin(x * waveSpeed + t) * waveHeight;
 
   for (let p of fireParticles) {
     let waveCenterY = waveY(p.x);
     let distance = abs(p.y - waveCenterY);
-    let threshold = 30; // 波の影響範囲
+    let threshold = 60; // 波の影響範囲
 
     // 0 = 波の中心（最大影響）、threshold = 外側（通常色）
     let intensity = constrain(1 - distance / threshold, 0, 1);
