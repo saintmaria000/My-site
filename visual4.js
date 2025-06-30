@@ -44,7 +44,7 @@ function drawVisual4() {
     let y = p.pos.y + p.speed + amp * 5;
 
     fill(p.hue, 100, 100, map(p.pos.y, -fireHeight, 0, 0, 100));
-    ellipse(x + width / 2, y + height, 2, 2);  // -y で上昇方向に描画
+    ellipse(x, y, 2, 2);  // -y で上昇方向に描画
 
     p.pos.y += p.speed + amp * 3;
     if (p.pos.y > 0) {
