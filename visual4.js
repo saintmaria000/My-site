@@ -1,13 +1,13 @@
 let particles = [];
-const maxParticles = 12000;
+const maxParticles = 10000;
 const baseEmissionRate = 50;
-const flowFieldScale = 0.01;
-const reflowChance = 0.2;
 
-// 迷子関連
-const lostChance = 0.002;
-const lostDuration = 300; // frames
-const followChance = 0.1;
+// === ノイズと流れ調整 ===
+const flowFieldScale = 0.005;     // 🔧 ノイズの滑らかさ（小さいと滑らか、大きいと激しい）
+const noiseStrength = 1.2;        // 🔧 ノイズベクトルの強さ（揺れの勢い）
+const upwardInfluence = 0.1;      // 🔧 上昇ベクトルの影響度（0〜1：0.1は「ほぼノイズ、少し上」）
+
+const reflowChance = 0.2;         // ワープ時にランダム配置される確率
 
 function initVisual4() {
   particles = [];
@@ -15,61 +15,35 @@ function initVisual4() {
 
 function drawVisual4() {
   noStroke();
-  fill(0, 10);
+  fill(0, 10);  // 背景フェードで軌跡を残す
   rect(0, 0, width, height);
   colorMode(HSB, 360, 100, 100, 100);
 
+  // === パーティクル生成 ===
   let emissionRate = baseEmissionRate;
   while (particles.length < maxParticles && emissionRate-- > 0) {
     const edge = random(["left", "right", "bottom"]);
     const x = (edge === "left") ? 0 :
               (edge === "right") ? width : random(width);
     const y = (edge === "bottom") ? height : height / 2 + random(height / 2);
-    particles.push({
-      pos: createVector(x, y),
-      alpha: 0,
-      state: "normal",
-      lostTimer: 0
-    });
+    particles.push({ pos: createVector(x, y), alpha: 0 });
   }
 
-  const kick = isKick();
+  const kick = isKick(); // audio.js 側の高精度キック検出（true/false）
 
   for (const p of particles) {
-    // === 状態遷移 ===
-    if (p.state === "normal" && random() < lostChance) {
-      p.state = "lost";
-      p.lostTimer = lostDuration;
-    } else if (p.state === "lost") {
-      p.lostTimer--;
-      if (p.lostTimer <= 0) {
-        p.state = "normal";
-      }
-    }
+    // ノイズベクトル
+    const angle = noise(p.pos.x * flowFieldScale, p.pos.y * flowFieldScale, frameCount * 0.005) * TWO_PI;
+    const noiseVec = p5.Vector.fromAngle(angle).mult(noiseStrength);
 
-    // === 移動方向 ===
-    let angle;
-    if (p.state === "lost") {
-      angle = noise(p.pos.x * 0.005, p.pos.y * 0.005, frameCount * 0.01) * TWO_PI * 4;
-    } else {
-      angle = noise(p.pos.x * flowFieldScale, p.pos.y * flowFieldScale, frameCount * 0.005) * TWO_PI * 2;
+    // 上方向ベクトル（0, -1）とのブレンド
+    const upVec = createVector(0, -1);
+    const flow = p5.Vector.lerp(noiseVec, upVec, upwardInfluence);  // 🔧 上昇の強さは upwardInfluence を調整
 
-      // 迷子の近くにいれば追随
-      for (const other of particles) {
-        if (other !== p && other.state === "lost" && dist(p.pos.x, p.pos.y, other.pos.x, other.pos.y) < 50) {
-          if (random() < followChance) {
-            let toOther = p5.Vector.sub(other.pos, p.pos);
-            angle = toOther.heading();
-            break;
-          }
-        }
-      }
-    }
+    // 移動
+    p.pos.add(flow);
 
-    const v = p5.Vector.fromAngle(angle).mult(1.2);
-    p.pos.add(v);
-
-    // === ワープ処理（軌道描画しない）===
+    // === 画面端ワープ処理 ===
     if (p.pos.x < 0 || p.pos.x > width) {
       p.pos.x = (p.pos.x < 0) ? width : 0;
       if (random() < reflowChance) p.pos.y = random(height);
@@ -84,7 +58,7 @@ function drawVisual4() {
     // === フェードイン ===
     if (p.alpha < 100) p.alpha += 2;
 
-    // === 描画（キック時白）===
+    // === 点滅（キック時は白、それ以外は赤系ノイズ色） ===
     const hue = 10 + noise(p.pos.x * 0.01, p.pos.y * 0.01) * 20;
     const alpha = p.alpha;
     fill(kick ? color(0, 0, 100, alpha) : color(hue, 100, 100, alpha));
