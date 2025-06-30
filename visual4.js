@@ -15,7 +15,7 @@ function initVisual4() {
 
 function drawVisual4() {
   noStroke();
-  fill(0, 10);
+  fill(0,8);//particle残像
   rect(0, 0, width, height);
   colorMode(HSB, 360, 100, 100, 100);
 
