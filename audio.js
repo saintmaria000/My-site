@@ -58,6 +58,9 @@ function updateAudio() {
 }
 
 // --- 音量関連 ---
+function getAmplitude() {
+  return amplitude.getLevel();  // これが p5.js の音量取得関数
+}
 function getVolumeLevel() {
   return amplitude.getLevel();
 }
