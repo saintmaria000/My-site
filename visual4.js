@@ -29,7 +29,7 @@ function drawVisual4() {
   background(0, 0, 0, 20); // 黒背景に軽い残像
 
   let t = frameCount * 0.05;
-  let waveHeight = 50;
+  let waveHeight = height;
   let waveSpeed = 0.02;
   let waveY = (x) => sin(x * waveSpeed + t) * waveHeight;
 
