@@ -2,7 +2,7 @@ let fireParticles = [];
 let numFireParticles = 5000;
 
 function initVisual4() {
-  let fireHeight = height;
+  fireHeight = height;
   fireWidth = width;
   fireParticles = [];
 
