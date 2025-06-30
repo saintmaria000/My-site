@@ -12,7 +12,6 @@ function setup() {
   setupUI();
   setupAudio();
   initVisual3();
-  setupDebugUI();
 
   // ファイル名を表示
   const nameDisplay = document.getElementById("file-name-display");
