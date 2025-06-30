@@ -93,7 +93,7 @@ function drawVisual4() {
     let size = map(p.z, 0.2, 1, 1, 3);
 
     // 白点滅
-    if (amp > 0.8 && random() < 0.2) {
+    if (amp > 0.8 && random() < 0.6) {
       p.flashTimer = 3;
     }
 
