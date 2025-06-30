@@ -1,8 +1,13 @@
 let sound, fft, amplitude;
 
-/**
- * サウンドとFFT初期化、UIイベントも設定
- */
+const noiseFloor = {
+  bass: 30,
+  mid: 40,
+  hi: 20
+};
+
+const kickThreshold = 80;  // 四つ打ち感知のベースエネルギー閾値
+
 function setupAudio() {
   fft = new p5.FFT();
   amplitude = new p5.Amplitude();
@@ -29,27 +34,35 @@ function togglePlay() {
   });
 }
 
-// --- 以下：他ファイルから使える音情報取得関数たち ---
-
 function updateAudio() {
   if (sound && sound.isPlaying() && fft.input !== sound) {
-  fft.setInput(sound);
-  } 
+    fft.setInput(sound);
+  }
   fft.analyze();
 }
 
-function getVolumeLevel() {
-  return amplitude.getLevel();
-}
-
+// --- 通常の生値取得 ---
 function getSpectrum() {
-  return fft.analyze(); // 配列
+  return fft.analyze();
 }
 
 function getWaveform() {
   return fft.waveform();
 }
 
+function getAmplitude() {
+  return amplitude.getLevel();
+}
+
+function getVolumeLevel() {
+  return amplitude.getLevel();
+}
+
+function isPlaying() {
+  return sound && sound.isPlaying();
+}
+
+// --- 帯域の生値取得 ---
 function getBass() {
   return fft.getEnergy(20, 150);
 }
@@ -62,10 +75,20 @@ function getHi() {
   return fft.getEnergy(4000, 12000);
 }
 
-function getAmplitude() {
-  return amplitude.getLevel();
+// --- ノイズ除去済み帯域 ---
+function getCleanBass() {
+  return Math.max(0, getBass() - noiseFloor.bass);
 }
 
-function isPlaying() {
-  return sound && sound.isPlaying();
+function getCleanMid() {
+  return Math.max(0, getMid() - noiseFloor.mid);
+}
+
+function getCleanHi() {
+  return Math.max(0, getHi() - noiseFloor.hi);
+}
+
+// --- キック検出（四つ打ち感知） ---
+function isKick() {
+  return getBass() > kickThreshold;
 }
