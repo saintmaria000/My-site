@@ -1,9 +1,7 @@
-// UI の初期化とデバッグ表示
+// --- UI初期化とデバッグ表示 ---
 let infoDiv;
 
 function setupUI() {
-
-  // デバッグ情報表示用の infoDiv を作成・スタイル設定
   infoDiv = createDiv('');
   infoDiv.style('position', 'fixed')
          .style('top', '50%')
@@ -18,13 +16,33 @@ function setupUI() {
          .style('z-index', '10');
 }
 
-function updateDebugInfo(data) {
+function updateDebugInfo() {
+  const amp = getAmplitude();
+  const vol = getVolumeLevel();
+
+  const bass = getBass();
+  const mid = getMid();
+  const hi = getHi();
+
+  const cleanBass = getCleanBass();
+  const cleanMid = getCleanMid();
+  const cleanHi = getCleanHi();
+
+  const kick = isKick() ? '🟢' : '⚫️';
+  const snare = isSnare ? (isSnare() ? '🔵' : '⚫️') : '–';
+  const hat = isHat ? (isHat() ? '🔴' : '⚫️') : '–';
+
   infoDiv.html(`
-    waveform.length: ${data.waveformLength}<br/>
-    isPlaying: ${data.isPlaying}<br/>
-    volume: ${data.volume}<br/>
-    bass: ${data.bass}<br/>
-    mid: ${data.mid}<br/>
-    hi: ${data.hi}<br/>
+    <b>🎧 Audio Debug</b><br/>
+    isPlaying: ${isPlaying()}<br/>
+    volume: ${vol.toFixed(2)}<br/><br/>
+
+    Bass: ${bass.toFixed(1)} / Clean: ${cleanBass.toFixed(1)}<br/>
+    Mid: ${mid.toFixed(1)} / Clean: ${cleanMid.toFixed(1)}<br/>
+    Hi: ${hi.toFixed(1)} / Clean: ${cleanHi.toFixed(1)}<br/><br/>
+
+    Kick: ${kick}<br/>
+    Snare: ${snare}<br/>
+    Hat: ${hat}
   `);
 }
