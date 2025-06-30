@@ -1,12 +1,22 @@
 let sound, fft, amplitude;
 
+// ノイズフロア（平均的な環境ノイズの基準値）
 const noiseFloor = {
   bass: 30,
   mid: 40,
   hi: 20
 };
 
-const kickThreshold = 80;  // 四つ打ち感知のベースエネルギー閾値
+// トランジェント検出のための履歴
+const historySize = 10;
+let bassHistory = [];
+let midHistory = [];
+let hiHistory = [];
+
+// トランジェント感知のしきい値（感度）
+const kickSensitivity = 1.5;
+const snareSensitivity = 1.4;
+const hatSensitivity = 1.3;
 
 function setupAudio() {
   fft = new p5.FFT();
@@ -39,9 +49,22 @@ function updateAudio() {
     fft.setInput(sound);
   }
   fft.analyze();
+
+  // 履歴更新
+  bassHistory.push(getBass());
+  if (bassHistory.length > historySize) bassHistory.shift();
+
+  midHistory.push(getMid());
+  if (midHistory.length > historySize) midHistory.shift();
+
+  hiHistory.push(getHi());
+  if (hiHistory.length > historySize) hiHistory.shift();
 }
 
-// --- 通常の生値取得 ---
+// ----------------------------
+// 基本情報取得
+// ----------------------------
+
 function getSpectrum() {
   return fft.analyze();
 }
@@ -62,7 +85,10 @@ function isPlaying() {
   return sound && sound.isPlaying();
 }
 
-// --- 帯域の生値取得 ---
+// ----------------------------
+// 各帯域のエネルギー取得
+// ----------------------------
+
 function getBass() {
   return fft.getEnergy(20, 150);
 }
@@ -75,7 +101,6 @@ function getHi() {
   return fft.getEnergy(4000, 12000);
 }
 
-// --- ノイズ除去済み帯域 ---
 function getCleanBass() {
   return Math.max(0, getBass() - noiseFloor.bass);
 }
@@ -88,7 +113,24 @@ function getCleanHi() {
   return Math.max(0, getHi() - noiseFloor.hi);
 }
 
-// --- キック検出（四つ打ち感知） ---
+// ----------------------------
+// トランジェント（瞬間的ピーク）検出
+// ----------------------------
+
+function isTransient(current, history, sensitivity) {
+  if (history.length === 0) return false;
+  const avg = history.reduce((a, b) => a + b, 0) / history.length;
+  return current > avg * sensitivity;
+}
+
 function isKick() {
-  return getBass() > kickThreshold;
+  return isTransient(getCleanBass(), bassHistory, kickSensitivity);
+}
+
+function isSnare() {
+  return isTransient(getCleanMid(), midHistory, snareSensitivity);
+}
+
+function isHat() {
+  return isTransient(getCleanHi(), hiHistory, hatSensitivity);
 }
