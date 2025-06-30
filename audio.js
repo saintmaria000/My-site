@@ -11,7 +11,7 @@ const noiseFloor = {
 
 // 閾値設定（生エネルギー + 差分）
 const thresholds = {
-  bass: { energy: 60, diff: 15 },
+  bass: { energy: 50, diff: 12 },
   mid: { energy: 40, diff: 12 },
   hi: { energy: 25, diff: 8 }
 };
