@@ -1,7 +1,6 @@
 let fireParticles = [];
 let numFireParticles = 5000;
 let fireHeight = 400;
-let fireWidth = windowwidth / 2;
 
 function initVisual4() {
   fireWidth = width;
