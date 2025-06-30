@@ -2,7 +2,7 @@ let particles = [];
 const maxParticles = 10000;
 const baseEmissionRate = 50;
 const flowFieldScale = 0.01;
-const pulseThreshold = 0.85; // キック音感度
+const pulseThreshold = 0.96; // キック音感度
 const reflowChance = 0.2;    // ワープ時のランダム再配置率
 
 function initVisual4() {
