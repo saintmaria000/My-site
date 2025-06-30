@@ -30,13 +30,13 @@ function drawVisual4() {
 
   let t = frameCount * 0.05;
   let waveAmplitude = 50;      // 波の振幅（xの揺れ幅）
-  let waveSpeed = 0.02;        // 波のスピード
+  let waveSpeed = 0.01;        // 波のスピード
   let waveX = (y) => sin(y * waveSpeed - t) * waveAmplitude;  // 縦方向進行波
 
   for (let p of fireParticles) {
     let waveCenterX = waveX(p.y);
     let distance = abs(p.x - waveCenterX);
-    let threshold = 30;  // 波の影響範囲
+    let threshold = 60;  // 波の影響範囲
 
     // 波の中心に近いほど強い影響（色・透明度が変化）
     let intensity = constrain(1 - distance / threshold, 0, 1);
