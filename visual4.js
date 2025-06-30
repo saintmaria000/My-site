@@ -1,80 +1,54 @@
 let fireParticles = [];
-let numFireParticles = 5000;
-let fireHeight;
-let fireWidth;
+let gridCols = 200;
+let gridRows = 120;
 
 function initVisual4() {
-  fireHeight = height;
-  fireWidth = width;
   fireParticles = [];
 
-  for (let i = 0; i < numFireParticles; i++) {
-    let x = random(-fireWidth / 2, fireWidth / 2);
-    let y = random(-fireHeight, 0);
-    let z = 1; // ブレ排除のため固定奥行き
+  let xSpacing = width / gridCols;
+  let ySpacing = height / gridRows;
 
-    fireParticles.push({
-      basePos: createVector(x, y),
-      hue: 30, // 一律の基本色（赤系）
-      z: z,
-      flashTimer: 0
-    });
+  for (let i = 0; i < gridCols; i++) {
+    for (let j = 0; j < gridRows; j++) {
+      let x = i * xSpacing - width / 2 + xSpacing / 2;
+      let y = j * ySpacing - height + ySpacing / 2;
+
+      fireParticles.push({
+        x: x,
+        y: y
+      });
+    }
   }
 }
 
 function drawVisual4() {
   push();
-  translate(width / 2, height);  // 下中央から描画
+  translate(width / 2, height);
   noStroke();
   colorMode(HSB, 360, 100, 100, 100);
+  background(0, 0, 0, 20); // 黒背景に軽い残像
 
-  // 残像フェード背景
-  fill(0, 0, 0, 10);
-  rect(-width / 2, -height, width, height * 2);
-
-  let spectrum = fft.analyze();
-  let level = amplitude.getLevel();
-  let t = frameCount * 0.03;  // 時間ベース
+  let t = frameCount * 0.05;
+  let waveHeight = 50;
+  let waveSpeed = 0.02;
+  let waveY = (x) => sin(x * waveSpeed + t) * waveHeight;
 
   for (let p of fireParticles) {
-    // Yのベース位置 → 高さにマッピング
-    let baseY = map(p.basePos.y, -fireHeight, 0, -height, 0);
+    let waveCenterY = waveY(p.x);
+    let distance = abs(p.y - waveCenterY);
+    let threshold = 30; // 波の影響範囲
 
-    // Y方向 sin波で一様な上下揺れ
-    let waveY = sin(p.basePos.x * 0.01 + t) * 40 * level;
-    let y = baseY + waveY;
+    // 0 = 波の中心（最大影響）、threshold = 外側（通常色）
+    let intensity = constrain(1 - distance / threshold, 0, 1);
 
-    // X方向は一切揺らさない → ブレ排除
-    let x = p.basePos.x;
+    // 通常色 → 波中心色（橙 → 青白）への補間
+    let hue = lerp(30, 200, intensity);  // HSB: 30=橙, 200=青
+    let sat = lerp(100, 50, intensity);
+    let bri = lerp(100, 100, intensity);
+    let alpha = lerp(20, 100, intensity); // 中心ほど明るく
 
-    // 音量スペクトラムに基づく振幅
-    let waveIndex = floor(map(p.basePos.y, -fireHeight, 0, 0, spectrum.length));
-    let amp = map(spectrum[waveIndex], 0, 255, 0, 1);
-
-    // 70%で白く点滅（ブレなし）
-    if (amp > 0.4) {
-      p.flashTimer = 2;
-    }
-
-    // 色とサイズ
-    let hue = 30; // 一律赤〜橙系
-    let alpha = map(y, -height, 0, 100, 0);
-    let size = 2;
-
-    // 進行波による青変化
-    let threshold = 6;
-    let distanceToWave = abs(waveY);
-
-    if (p.flashTimer > 0) {
-      fill(0, 0, 100, alpha);  // 白
-      p.flashTimer--;
-    } else if (distanceToWave < threshold) {
-      fill(180, 100, 100, alpha);  // 青（波通過時）
-    } else {
-      fill(hue, 100, 100, alpha);  // 通常色（赤系）
-    }
-
-    ellipse(x, y, size, size);
+    fill(hue, sat, bri, alpha);
+    ellipse(p.x, p.y, 2, 2);
   }
 
   pop();
