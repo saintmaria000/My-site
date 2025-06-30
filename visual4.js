@@ -28,7 +28,7 @@ function drawVisual4() {
   colorMode(HSB, 360, 100, 100, 100);
   background(0, 0, 0, 20);  // 軽い残像の黒背景
 
-  let t = frameCount * 0.05;
+  let t = frameCount * 0.15;
   let waveAmplitude = 50;      // 波の振幅（xの揺れ幅）
   let waveSpeed = 0.01;        // 波のスピード
   let waveX = (y) => sin(y * waveSpeed - t) * waveAmplitude;  // 縦方向進行波
